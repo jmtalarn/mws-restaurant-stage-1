@@ -1,21 +1,16 @@
 const CACHE_NAME = "mws-restaurant-cache";
 
-self.addEventListener('fetch', function (event) {
-  var newResponse = fetch(event.request).then(function (response) {
-      var clonedResponse = response.clone();
-      if (response.ok) {
-          caches.open(CACHE_NAME).then(function (cache) {
-              cache.put(event.request, clonedResponse);
-          });
-      }
-      return response;
+self.addEventListener('fetch', function(event) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(function(cache) {
+        return fetch(event.request).then(function(response) {
+          cache.put(event.request, response.clone());
+          console.log(`Cached ${event.request}`);
+          return response;
+        }).catch(err=>{
+            console.log(`Serving ${event.request} cached response due ${err}`);
+            return cache.match(event.request);
+        });
+      })
+    );
   });
-  var responseInCache = caches.open(CACHE_NAME).then(function (cache) {
-      return cache.match(event.request).then(function(response) {
-          return response || newResponse;
-      });
-  }).catch(function (e) {
-      return newResponse;
-  });
-  event.respondWith(responseInCache);
-});

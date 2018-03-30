@@ -90,6 +90,7 @@ nav {
 
 nav h1 {
   margin: auto;
+  line-height: 5rem;
 }
 
 nav h1 a {
