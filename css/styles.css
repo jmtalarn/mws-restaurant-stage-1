@@ -184,6 +184,8 @@ nav h1 a {
   text-align: center;
   display: flex;
   flex-wrap: wrap;
+  width: 92em;
+  margin: 0 auto;
 }
 
 #restaurants-list li {
