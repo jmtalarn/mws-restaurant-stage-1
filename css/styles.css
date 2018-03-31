@@ -86,11 +86,11 @@ nav {
   height: 80px;
   background-color: #252831;
   text-align: center;
+  display: flex;
 }
 
 nav h1 {
   margin: auto;
-  line-height: 5rem;
 }
 
 nav h1 a {

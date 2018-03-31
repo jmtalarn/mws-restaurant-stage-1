@@ -1,0 +1,27 @@
+{
+  "name": "mws-restaurant-stage-1",
+  "version": "1.0.0",
+  "description": "--- #### _Three Stage Course Material Project - Restaurant Reviews_",
+  "main": "gulpfile.js",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-image-resize": "^0.13.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-serve": "^1.4.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmtalarn/mws-restaurant-stage-1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jmtalarn/mws-restaurant-stage-1/issues"
+  },
+  "homepage": "https://github.com/jmtalarn/mws-restaurant-stage-1#readme"
+}

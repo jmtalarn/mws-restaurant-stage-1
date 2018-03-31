@@ -24,5 +24,9 @@ In a terminal, check the version of Python you have: `python -V`. If you have Py
 
 Most of the code in this project has been written to the ES6 JavaScript specification for compatibility with modern web browsers and future proofing JavaScript code. As much as possible, try to maintain use of ES6 in any additional JavaScript you write. 
 
-
+### How to start it
+1. First of all do a `npm install` to install the required npm packages
+2. Run `npm start` command. That will launch the default `gulp`  task which will run the resizing images task and run a server
+    - `gulp serve` will run a server
+    - `gulp generate-images` will create in the img folder the image resources
 
