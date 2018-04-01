@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var serve = require('gulp-serve');
 var imageResize = require('gulp-image-resize');
 var rename = require("gulp-rename");
+var browserSync = require('browser-sync').create();
 
 gulp.task('default', ['generate-images', 'serve']);
 
@@ -28,4 +29,16 @@ gulp.task('generate-images', function () {
         .pipe(gulp.dest("img"));
     gulp.src("img-src/**/*.{jpg,png}")
         .pipe(gulp.dest("img"))
+});
+
+// Static server
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        server: {
+            baseDir: "./"
+        },
+         port: 8000
+        
+    });
+    gulp.watch("**/*.*").on('change', browserSync.reload);
 });

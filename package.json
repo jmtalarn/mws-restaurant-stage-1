@@ -5,6 +5,7 @@
   "main": "gulpfile.js",
   "dependencies": {},
   "devDependencies": {
+    "browser-sync": "^2.23.6",
     "gulp": "^3.9.1",
     "gulp-image-resize": "^0.13.0",
     "gulp-rename": "^1.2.2",
@@ -12,7 +13,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp" 
+    "start": "gulp"
   },
   "repository": {
     "type": "git",

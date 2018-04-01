@@ -106,8 +106,8 @@ nav h1 a {
   list-style: none;
   background-color: #eee;
   font-size: 17px;
-  margin: 0;
-  width: calc(50% - 80px);
+  margin: auto auto 0 auto;
+  width: 100%; /*calc(50% - 80px);*/
 }
 
 /* Display list items side by side */
@@ -129,6 +129,7 @@ nav h1 a {
 #breadcrumb li a {
   color: #0275d8;
   text-decoration: none;
+  padding: 1em;
 }
 
 /* Add a color on mouse-over */
@@ -152,6 +153,8 @@ nav h1 a {
   width: 100%;
   background-color: #3397DB;
   align-items: center;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .filter-options h2 {
@@ -183,6 +186,7 @@ nav h1 a {
   padding: 30px 15px 60px;
   text-align: center;
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   max-width: 92em;
   margin: 0 auto;
@@ -270,10 +274,6 @@ nav h1 a {
   margin: 15px 0 30px;
   text-transform: uppercase;
   line-height: 1.1;
-}
-
-#restaurant-img {
-  width: 90%;
 }
 
 #restaurant-address {
