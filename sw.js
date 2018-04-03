@@ -1,5 +1,14 @@
 const CACHE_NAME = "mws-restaurant-cache";
-
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll([
+        '/cached.html',
+        '/js/cached.js'
+      ]);
+    })
+  );
+});
 self.addEventListener('fetch', function(event) {
     event.respondWith(
       caches.open(CACHE_NAME).then(function(cache) {
@@ -9,7 +18,8 @@ self.addEventListener('fetch', function(event) {
           return response;
         }).catch(err=>{
             console.log(`Serving ${event.request} cached response due ${err}`);
-            return cache.match(event.request);
+            return cache.match(event.request)
+              .then( response=> (response || cache.match("/cached.html")) );
         });
       })
     );
