@@ -4,7 +4,10 @@ var imageResize = require('gulp-image-resize');
 var rename = require("gulp-rename");
 var browserSync = require('browser-sync').create();
 
-gulp.task('default', ['generate-images', 'serve']);
+var sass = require('gulp-sass');
+var autoprefixer = require('gulp-autoprefixer');
+
+gulp.task('default', ['generate-images','styles','serve']);
 
 gulp.task('serve', serve({
     port: 8000
@@ -31,14 +34,23 @@ gulp.task('generate-images', function () {
         .pipe(gulp.dest("img"))
 });
 
+gulp.task('styles', function(){
+    gulp.src('sass/**/*.scss')
+     .pipe(sass().on('error', sass.logError))
+     .pipe(autoprefixer({ browsers: ['last 2 versions','ie 8', 'ie 9']}))
+     .pipe(gulp.dest('./css'));
+})
+gulp.task('watch:css', function(){ gulp.watch('sass/**/*.scss', ['styles'])});
+
 // Static server
-gulp.task('browser-sync', function() {
+gulp.task('watch', ['watch:styles'], function() {
     browserSync.init({
         server: {
             baseDir: "./"
         },
-         port: 8000
-        
+        port: 8000
     });
-    gulp.watch("**/*.*").on('change', browserSync.reload);
+
+    gulp.watch(["**/*.html","**/*.js","**/*.css"])
+        .on('change', browserSync.reload);
 });
