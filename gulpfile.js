@@ -43,7 +43,7 @@ gulp.task('styles', function(){
 gulp.task('watch:css', function(){ gulp.watch('sass/**/*.scss', ['styles'])});
 
 // Static server
-gulp.task('watch', ['watch:styles'], function() {
+gulp.task('watch', ['watch:css'], function() {
     browserSync.init({
         server: {
             baseDir: "./"
