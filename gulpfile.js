@@ -50,7 +50,6 @@ gulp.task('watch', ['watch:css'], function() {
         },
         port: 8000
     });
-
-    gulp.watch(["**/*.html","**/*.js","**/*.css"])
+    gulp.watch(["**/*.html","**/*.js","**/*.css","!node_modules/**/*"])
         .on('change', browserSync.reload);
 });
