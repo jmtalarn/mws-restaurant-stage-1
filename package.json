@@ -6,8 +6,11 @@
   "dependencies": {},
   "devDependencies": {
     "browser-sync": "^2.23.6",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.10.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^5.0.0",
+    "gulp-eslint": "^4.0.2",
     "gulp-image-resize": "^0.13.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^4.0.1",
