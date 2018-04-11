@@ -8,7 +8,7 @@ var eslint = require('gulp-eslint');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 
-gulp.task('default', ['generate-images','styles','lint','serve']);
+gulp.task('default', ['generate-images', 'styles', 'lint', 'serve']);
 
 gulp.task('serve', serve({
     port: 8000
@@ -32,33 +32,42 @@ gulp.task('generate-images', function () {
         }))
         .pipe(gulp.dest('img'));
     gulp.src('img-src/**/*.{jpg,png}')
-        .pipe(gulp.dest('img'))
+        .pipe(gulp.dest('img'));
 });
 
-gulp.task('lint', function(){
-    return gulp.src(['**/*.js','!node_modules/**/*'])
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failOnError());
+gulp.task('lint', function () {
+ return gulp.src([ '**/*.js', '!node_modules/**/*' ])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failOnError())
 });
-gulp.task('watch:js', function(){ gulp.watch(['!node_modules/**/*','**/*.js'], ['lint'])});
+gulp.task('watch:js', function () {
+    gulp.watch([
+        '**/*.js',
+        '!node_modules/**/*'
+    ], ['lint'])
+});
 
-gulp.task('styles', function(){
+gulp.task('styles', function () {
     gulp.src('sass/**/*.scss')
-     .pipe(sass().on('error', sass.logError))
-     .pipe(autoprefixer({ browsers: ['last 2 versions','ie 8', 'ie 9']}))
-     .pipe(gulp.dest('./css'));
+        .pipe(sass().on('error', sass.logError))
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions', 'ie 8', 'ie 9']
+        }))
+        .pipe(gulp.dest('./css'));
 })
-gulp.task('watch:css', function(){ gulp.watch('sass/**/*.scss', ['styles'])});
+gulp.task('watch:css', function () {
+    gulp.watch('sass/**/*.scss', ['styles'])
+});
 
 // Static server
-gulp.task('watch', ['watch:css','watch:js'], function() {
+gulp.task('watch', ['watch:css', 'watch:js'], function () {
     browserSync.init({
         server: {
             baseDir: './'
         },
         port: 8000
     });
-    gulp.watch(['!node_modules/**/*','**/*.html','**/*.js','**/*.css'])
+    gulp.watch(['**/*.html', '**/*.js', '**/*.css','!node_modules/**/*'])
         .on('change', browserSync.reload);
 });
