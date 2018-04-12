@@ -1,4 +1,4 @@
-const CACHE_NAME = "mws-restaurant-cache";
+const CACHE_NAME = 'mws-restaurant-cache';
 
 caches.open(CACHE_NAME).then(function(cache) {
     console.log(cache);
@@ -10,7 +10,7 @@ caches.open(CACHE_NAME).then(function(cache) {
                 cache.match(request)
                     .then(response=>response.text())
                     .then(responseText=>{
-                        var parsedResponse = (new window.DOMParser()).parseFromString(responseText, "text/html");
+                        var parsedResponse = (new window.DOMParser()).parseFromString(responseText, 'text/html');
                         const title = parsedResponse.title;
                         
                         const li = document.createElement('LI');
@@ -19,6 +19,6 @@ caches.open(CACHE_NAME).then(function(cache) {
                         link.innerHTML = `${title} ${request.url}`;
                         li.appendChild(link);
                         list.appendChild(li);
-                    })  
-        }));
+                    });  
+            }));
 });
