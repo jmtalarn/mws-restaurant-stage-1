@@ -5,6 +5,8 @@
   "main": "gulpfile.js",
   "dependencies": {},
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
     "browser-sync": "^2.23.6",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.10.0",
@@ -13,6 +15,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^5.0.0",
+    "gulp-babel": "^7.0.1",
     "gulp-concat": "^2.6.1",
     "gulp-debug": "^3.2.0",
     "gulp-eslint": "^4.0.2",
@@ -22,9 +25,7 @@
     "gulp-sass": "^4.0.1",
     "gulp-serve": "^1.4.0",
     "gulp-uglify": "^3.0.0",
-    "jasmine": "^3.1.0",
-    "pump": "^3.0.0",
-    "uglify-es": "^3.3.9"
+    "jasmine": "^3.1.0"
   },
   "scripts": {
     "test": "gulp tests",
