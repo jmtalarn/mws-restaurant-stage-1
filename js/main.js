@@ -1,6 +1,7 @@
+/*global google DBHelper*/
 let restaurants,
     neighborhoods,
-    cuisines, DBHelper;
+    cuisines;
 var map
 var markers = []
 

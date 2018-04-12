@@ -1,3 +1,4 @@
+/*global google DBHelper*/
 let restaurant;
 var map;
 
@@ -173,7 +174,7 @@ const fillBreadcrumb = (restaurant=self.restaurant) => {
 const getParameterByName = (name, url) => {
     if (!url)
         url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
+    name = name.replace(/[[]]/g, '\\$&');
     const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
         results = regex.exec(url);
     if (!results)

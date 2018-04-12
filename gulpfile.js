@@ -9,8 +9,9 @@ var debug = require('gulp-debug');
 var concat = require('gulp-concat');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
-var uglify = require('gulp-uglify');
-var babel = require('gulp-babel');
+var uglifyes = require('uglify-es');
+var composer = require('gulp-uglify/composer');
+var uglify = composer(uglifyes, console);
 
 
 gulp.task('default', ['generate-images', 'copy-html', 'styles', 'scripts', 'tests', 'serve']);
@@ -45,15 +46,19 @@ gulp.task('generate-images', function () {
         .pipe(gulp.dest('dist/img'));
 });
 gulp.task('minify', function () {
-    gulp.src(['**/*.js', '!sw.js','!node_modules/**/*'])
-        .pipe(babel())
+    gulp.src(['js/**/*.js'])
         .pipe(concat('main.js'))
-        .gulp.dest('dist');
+        .pipe(uglify().on('error', function(e){
+            console.log(e);
+         }))
+        .pipe(gulp.dest('dist/js'));
 });
 gulp.task('minify-sw', function(){
-    gulp.src(['sw.js'])
-        .pipe(concat())
-        .gulp.dest('dist');
+    gulp.src(['./sw.js'])
+        .pipe(uglify().on('error', function(e){
+            console.log(e);
+         }))
+        .pipe(gulp.dest('dist/'));
 });
 gulp.task('lint', function () {
     return gulp.src(['**/*.js', '!node_modules/**/*'])

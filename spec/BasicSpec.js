@@ -1,3 +1,4 @@
+/*global describe beforeEach it expect*/
 describe('This is a basic spec', function () {
     beforeEach(function () {
         console.log('Function executed before each test');
