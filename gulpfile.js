@@ -10,31 +10,36 @@ var debug = require('gulp-debug');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 
-gulp.task('default', ['generate-images', 'styles', 'lint','tests', 'serve']);
+gulp.task('default', ['generate-images','copy-html', 'styles', 'lint','tests', 'serve']);
 
 gulp.task('serve', serve({
+    baseDir: './dist',
     port: 8000
 }));
 
+gulp.task('copy-html', function(){
+    gulp.src(['**/*.html','!node_modules/**/*'])
+        .pipe(gulp.dest('dist'));
+});
 gulp.task('generate-images', function () {
-    gulp.src('img-src/**/*.{jpg,png}')
+    gulp.src('img/**/*.{jpg,png}')
         .pipe(imageResize({
             width: 350
         }))
         .pipe(rename(function (path) {
             path.basename += '-small';
         }))
-        .pipe(gulp.dest('img'));
-    gulp.src('img-src/**/*.{jpg,png}')
+        .pipe(gulp.dest('dist/img'));
+    gulp.src('img/**/*.{jpg,png}')
         .pipe(imageResize({
             width: 640
         }))
         .pipe(rename(function (path) {
             path.basename += '-medium';
         }))
-        .pipe(gulp.dest('img'));
-    gulp.src('img-src/**/*.{jpg,png}')
-        .pipe(gulp.dest('img'));
+        .pipe(gulp.dest('dist/img'));
+    gulp.src('img/**/*.{jpg,png}')
+        .pipe(gulp.dest('dist/img'));
 });
 
 gulp.task('lint', function () {
@@ -51,12 +56,12 @@ gulp.task('watch:js', function () {
 });
 
 gulp.task('styles', function () {
-    gulp.src('sass/**/*.scss')
-        .pipe(sass().on('error', sass.logError))
+    gulp.src('sass/**/main.scss')
+        .pipe(sass({'outputStyle': 'compressed'}).on('error', sass.logError))
         .pipe(autoprefixer({
             browsers: ['last 2 versions', 'ie 8', 'ie 9']
         }))
-        .pipe(gulp.dest('./css'));
+        .pipe(gulp.dest('dist/css'));
 });
 gulp.task('watch:css', function () {
     gulp.watch('sass/**/*.scss', ['styles'])
@@ -78,10 +83,10 @@ gulp.task('tests', function () {
 gulp.task('watch', ['tests','watch:css', 'watch:js'], function () {
     browserSync.init({
         server: {
-            baseDir: './'
+            baseDir: './dist'
         },
         port: 8000
     });
-    gulp.watch(['**/*.html', '**/*.js', '**/*.css', '!node_modules/**/*.*'])
+    gulp.watch(['**/*.html', '**/*.js', '**/*.css', '!node_modules/**/*.*'],['copy-html'])
         .on('change', browserSync.reload);
 });
