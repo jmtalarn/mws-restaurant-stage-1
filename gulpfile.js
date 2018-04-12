@@ -36,10 +36,10 @@ gulp.task('generate-images', function () {
 });
 
 gulp.task('lint', function () {
- return gulp.src([ '**/*.js', '!node_modules/**/*' ])
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(eslint.failOnError())
+    return gulp.src([ '**/*.js', '!node_modules/**/*' ])
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failOnError());
 });
 gulp.task('watch:js', function () {
     gulp.watch([
@@ -68,6 +68,6 @@ gulp.task('watch', ['watch:css', 'watch:js'], function () {
         },
         port: 8000
     });
-    gulp.watch(['**/*.html', '**/*.js', '**/*.css','!node_modules/**/*'])
+    gulp.watch(['**/*.html', '**/*.js', '**/*.css','!node_modules/**/*.*'])
         .on('change', browserSync.reload);
 });

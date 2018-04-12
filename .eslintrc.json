@@ -7,19 +7,19 @@
     "extends": "eslint:recommended",
     "rules": {
         "indent": [
-            "warning",
+            "warn",
             4
         ],
         "linebreak-style": [
-            "warning",
+            "warn",
             "windows"
         ],
         "quotes": [
-            "warning",
+            "warn",
             "single"
         ],
         "semi": [
-            "warning",
+            "warn",
             "always"
         ]
     }
