@@ -13,6 +13,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^5.0.0",
+    "gulp-concat": "^2.6.1",
     "gulp-debug": "^3.2.0",
     "gulp-eslint": "^4.0.2",
     "gulp-image-resize": "^0.13.0",
@@ -20,7 +21,10 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^4.0.1",
     "gulp-serve": "^1.4.0",
-    "jasmine": "^3.1.0"
+    "gulp-uglify": "^3.0.0",
+    "jasmine": "^3.1.0",
+    "pump": "^3.0.0",
+    "uglify-es": "^3.3.9"
   },
   "scripts": {
     "test": "gulp tests",
