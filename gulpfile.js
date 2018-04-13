@@ -13,7 +13,8 @@ var uglifyes = require('uglify-es');
 var composer = require('gulp-uglify/composer');
 var uglify = composer(uglifyes, console);
 var sourcemaps = require('gulp-sourcemaps');
-
+const imagemin = require('imagemin');
+const imageminPngquant = require('imagemin-pngquant');
 
 gulp.task('default', ['generate-images', 'copy-html', 'styles', 'scripts', 'tests', 'serve']);
 
@@ -31,6 +32,10 @@ gulp.task('generate-images', function () {
         .pipe(imageResize({
             width: 350
         }))
+        .pipe(imagemin({
+            progressive: true,
+            use: [imageminPngquant()]
+        }))
         .pipe(rename(function (path) {
             path.basename += '-small';
         }))
@@ -39,11 +44,19 @@ gulp.task('generate-images', function () {
         .pipe(imageResize({
             width: 640
         }))
+        .pipe(imagemin({
+            progressive: true,
+            use: [imageminPngquant()]
+        }))
         .pipe(rename(function (path) {
             path.basename += '-medium';
         }))
         .pipe(gulp.dest('dist/img'));
     gulp.src('img/**/*.{jpg,png}')
+        .pipe(imagemin({
+            progressive: true,
+            use: [imageminPngquant()]
+        }))
         .pipe(gulp.dest('dist/img'));
 });
 gulp.task('minify', function () {
