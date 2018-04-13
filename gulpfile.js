@@ -12,6 +12,7 @@ var autoprefixer = require('gulp-autoprefixer');
 var uglifyes = require('uglify-es');
 var composer = require('gulp-uglify/composer');
 var uglify = composer(uglifyes, console);
+var sourcemaps = require('gulp-sourcemaps');
 
 
 gulp.task('default', ['generate-images', 'copy-html', 'styles', 'scripts', 'tests', 'serve']);
@@ -47,17 +48,21 @@ gulp.task('generate-images', function () {
 });
 gulp.task('minify', function () {
     gulp.src(['js/**/*.js'])
+        .pipe(sourcemaps.init())
         .pipe(concat('main.js'))
         .pipe(uglify().on('error', function(e){
             console.log(e);
-         }))
+        }))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest('dist/js'));
 });
 gulp.task('minify-sw', function(){
     gulp.src(['./sw.js'])
+        .pipe(sourcemaps.init())
         .pipe(uglify().on('error', function(e){
             console.log(e);
-         }))
+        }))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest('dist/'));
 });
 gulp.task('lint', function () {
