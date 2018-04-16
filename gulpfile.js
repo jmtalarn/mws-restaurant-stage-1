@@ -13,7 +13,7 @@ var uglifyes = require('uglify-es');
 var composer = require('gulp-uglify/composer');
 var uglify = composer(uglifyes, console);
 var sourcemaps = require('gulp-sourcemaps');
-const imagemin = require('imagemin');
+const imagemin = require('gulp-imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 
 gulp.task('default', ['generate-images', 'copy-html', 'styles', 'scripts', 'tests', 'serve']);
