@@ -16,16 +16,25 @@ var sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 
-gulp.task('default', ['generate-images', 'copy-html', 'styles', 'scripts', 'tests', 'serve']);
+gulp.task('default', ['generate-images', 'copy-json', 'copy-html', 'styles', 'scripts', 'tests', 'serve']);
 
 gulp.task('serve', serve({
     baseDir: './dist',
     port: 8000
 }));
-
+gulp.task('copy-json', function () {
+    gulp.src(['data/restaurants.json'])
+        .pipe(gulp.dest('dist/data/'));
+});
 gulp.task('copy-html', function () {
-    gulp.src(['**/*.html', '!node_modules/**/*'])
+    gulp.src(['**/*.html', '!node_modules/**/*', '!server/**/*','!dist/**/*'])
         .pipe(gulp.dest('dist'));
+});
+gulp.task('watch:html', function () {
+    gulp.watch([
+        '**/*.html',
+        '!node_modules/**/*', '!server/**/*','!dist/**/*'
+    ], ['copy-html']);
 });
 gulp.task('generate-images', function () {
     gulp.src('img/**/*.{jpg,png}')
@@ -61,8 +70,8 @@ gulp.task('generate-images', function () {
 });
 gulp.task('minify', function () {
     gulp.src(['js/**/*.js'])
-        .pipe(sourcemaps.init())
         .pipe(concat('main.js'))
+        .pipe(sourcemaps.init())
         .pipe(uglify().on('error', function(e){
             console.log(e);
         }))
@@ -79,7 +88,7 @@ gulp.task('minify-sw', function(){
         .pipe(gulp.dest('dist/'));
 });
 gulp.task('lint', function () {
-    return gulp.src(['**/*.js', '!node_modules/**/*'])
+    return gulp.src(['**/*.js', '!node_modules/**/*', '!server/**/*','!dist/**/*'])
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failOnError());
@@ -88,7 +97,7 @@ gulp.task('scripts', ['lint', 'minify', 'minify-sw']);
 gulp.task('watch:js', function () {
     gulp.watch([
         '**/*.js',
-        '!node_modules/**/*'
+        '!node_modules/**/*', '!server/**/*','!dist/**/*'
     ], ['scripts']);
 });
 
@@ -119,13 +128,16 @@ gulp.task('tests', function () {
 });
 
 // Static server
-gulp.task('watch', ['tests', 'watch:css', 'watch:js'], function () {
+gulp.task('watch', ['copy-html','copy-json','generate-images','styles','scripts','watch:html', 'watch:css', 'watch:js'], function () {
     browserSync.init({
         server: {
             baseDir: './dist'
         },
+        serveStaticOptions: {
+            extensions: ["html","json","css","js"]
+        },
         port: 8000
     });
-    gulp.watch(['**/*.html', '**/*.js', '**/*.css', '!node_modules/**/*.*'], ['copy-html'])
+    gulp.watch(['dist/**/*' ])
         .on('change', browserSync.reload);
 });

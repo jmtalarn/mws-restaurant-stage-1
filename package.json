@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "--- #### _Three Stage Course Material Project - Restaurant Reviews_",
   "main": "gulpfile.js",
-  "dependencies": {},
+  "dependencies": {
+    "phantomjs": "^2.1.7"
+  },
   "devDependencies": {
     "browser-sync": "^2.23.6",
     "eslint-config-standard": "^11.0.0",
@@ -31,7 +33,7 @@
   },
   "scripts": {
     "test": "gulp tests",
-    "start": "gulp watch"
+    "start": "node server/server.js && gulp watch"
   },
   "repository": {
     "type": "git",
