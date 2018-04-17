@@ -19,7 +19,7 @@ const imageminPngquant = require('imagemin-pngquant');
 gulp.task('default', ['generate-images', 'copy-json', 'copy-html', 'styles', 'scripts', 'tests', 'serve']);
 
 gulp.task('serve', serve({
-    baseDir: './dist',
+    root: './dist',
     port: 8000
 }));
 gulp.task('copy-json', function () {
@@ -70,8 +70,8 @@ gulp.task('generate-images', function () {
 });
 gulp.task('minify', function () {
     gulp.src(['js/**/*.js'])
+        .pipe(sourcemaps.init())    
         .pipe(concat('main.js'))
-        .pipe(sourcemaps.init())
         .pipe(uglify().on('error', function(e){
             console.log(e);
         }))
