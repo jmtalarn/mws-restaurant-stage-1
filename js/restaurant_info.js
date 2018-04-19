@@ -63,9 +63,9 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     const imageSrc = DBHelper.imageUrlForRestaurant(restaurant);
     image.src = imageSrc;
     
-    image.srcset = `${imageSrc.slice(0, imageSrc.lastIndexOf('.'))}-small${imageSrc.slice(imageSrc.lastIndexOf('.'))} 320w,
-                                    ${imageSrc.slice(0, imageSrc.lastIndexOf('.'))}-medium${imageSrc.slice(imageSrc.lastIndexOf('.'))} 640w,
-                                    ${imageSrc} 800w`;
+    image.srcset = `${imageSrc}-small.jpg 320w,
+                                    ${imageSrc}-medium.jpg 640w,
+                                    ${imageSrc}.jpg 800w`;
     image.sizes = `(max-width: 800px) 100vw, 800px`;
 
     const cuisine = document.getElementById('restaurant-cuisine');

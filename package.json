@@ -33,7 +33,7 @@
   },
   "scripts": {
     "test": "gulp tests",
-    "start": "node server/server.js && gulp watch"
+    "start": "node server/server.js | gulp"
   },
   "repository": {
     "type": "git",

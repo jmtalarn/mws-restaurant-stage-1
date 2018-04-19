@@ -15,12 +15,8 @@ var sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 
-gulp.task('build', ['generate-images', 'copy-json', 'copy-html', 'styles', 'scripts']);
+gulp.task('build', ['generate-images', 'copy-html', 'styles', 'scripts']);
 
-gulp.task('copy-json', function () {
-    gulp.src(['data/restaurants.json'])
-        .pipe(gulp.dest('dist/data/'));
-});
 gulp.task('copy-html', function () {
     gulp.src(['**/*.html', '!node_modules/**/*', '!server/**/*','!dist/**/*'])
         .pipe(gulp.dest('dist'));
@@ -120,7 +116,7 @@ gulp.task('default', ['build','watch:html', 'watch:css', 'watch:js'], function (
             baseDir: './dist'
         },
         serveStaticOptions: {
-            extensions: ['html','json','css','js']
+            extensions: ['html','css','js']
         },
         port: 8000
     });
