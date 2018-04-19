@@ -15,7 +15,7 @@ var sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 
-gulp.task('build', ['generate-images', 'copy-json', 'copy-html', 'styles', 'scripts', 'tests']);
+gulp.task('build', ['generate-images', 'copy-json', 'copy-html', 'styles', 'scripts']);
 
 gulp.task('copy-json', function () {
     gulp.src(['data/restaurants.json'])
@@ -64,14 +64,14 @@ gulp.task('generate-images', function () {
         .pipe(gulp.dest('dist/img'));
 });
 gulp.task('minify', function () {
-    gulp.src(['**/*.js','!node_modules/**/*', '!server/**/*','!dist/**/*'])
+    gulp.src(['**/*.js','!spec/**/*.js','!node_modules/**/*', '!server/**/*','!dist/**/*'])
         .pipe(sourcemaps.init())    
         //.pipe(concat('main.js'))
         .pipe(uglify().on('error', function(e){
             console.log(e);
         }))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('dist/js'));
+        .pipe(gulp.dest('dist'));
 });
 gulp.task('lint', function () {
     return gulp.src(['**/*.js', '!node_modules/**/*', '!server/**/*','!dist/**/*'])
