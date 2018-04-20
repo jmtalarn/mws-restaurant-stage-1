@@ -107,13 +107,13 @@ gulp.task('generate-images', function () {
         .pipe(gulp.dest('dist/img'));
 });
 gulp.task('minify', function () {
-    gulp.src(['**/*.js', '!spec/**/*.js', '!node_modules/**/*', '!server/**/*', '!dist/**/*'])
+    gulp.src(['**/*.js', '!gulpfile.js','!spec/**/*.js', '!node_modules/**/*', '!server/**/*', '!dist/**/*'])
         .pipe(sourcemaps.init())
         //.pipe(concat('main.js'))
         .pipe(uglify().on('error', function (e) {
             console.log(e);
         }))
-        .pipe(sourcemaps.write())
+        .pipe(sourcemaps.write('maps'))
         .pipe(gulp.dest('dist'));
 });
 gulp.task('lint', function () {

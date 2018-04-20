@@ -145,18 +145,23 @@ const createRestaurantHTML = (restaurant) => {
     const title_id = `li_title_${restaurant.name.replace(/\s/g,'_')}`;
 
     li.setAttribute('aria-labelledby', title_id);
-    const image = document.createElement('img');
+    const image = new Image(); //document.createElement('img');
     image.className = 'restaurant-img';
     image.setAttribute('alt', `This is a representative image of the restaurant ${restaurant.name}`);
     image.setAttribute('tabindex', '0');
     image.title = `${restaurant.name}`;
+    image.src = 'img/Map_placeholder.svg';
     const imageSrc = DBHelper.imageUrlForRestaurant(restaurant);
     if (!/\.svg$/.test(imageSrc)){    
-        image.src = `${imageSrc}-small.jpg`;
-    }else{
-        image.src=imageSrc;
+        image.setAttribute('data-src', `${imageSrc}-small.jpg`);
+        setTimeout(()=>{
+                image.setAttribute('src', image.getAttribute('data-src'));
+                image.onload = function() {
+                   image.removeAttribute('data-src');
+                };
+            },100)
     }
-
+   
     li.append(image);
     const div = document.createElement('div');
     div.className = 'restaurant-description';
