@@ -151,8 +151,11 @@ const createRestaurantHTML = (restaurant) => {
     image.setAttribute('tabindex', '0');
     image.title = `${restaurant.name}`;
     const imageSrc = DBHelper.imageUrlForRestaurant(restaurant);
-    console.log(imageSrc);
-    image.src = `${imageSrc}-small.jpg`;
+    if (!/\.svg$/.test(imageSrc)){    
+        image.src = `${imageSrc}-small.jpg`;
+    }else{
+        image.src=imageSrc;
+    }
 
     li.append(image);
     const div = document.createElement('div');
