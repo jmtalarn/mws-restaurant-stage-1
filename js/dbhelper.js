@@ -145,7 +145,7 @@ class DBHelper {
         if (restaurant.photograph){
             return (`/img/${restaurant.photograph}`);
         }
-        return ('/img/No_image_available.svg');
+        return ('/img/Map_placeholder.svg');
     }
 
     /**

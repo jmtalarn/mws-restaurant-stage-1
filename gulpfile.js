@@ -14,6 +14,7 @@ var uglify = composer(uglifyes, console);
 var sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin');
 const imageminPngquant = require('imagemin-pngquant');
+const imageminJpegtran = require('imagemin-jpegtran');
 
 gulp.task('build', ['generate-images', 'generate-app-icon', 'copy-html', 'styles', 'scripts']);
 
@@ -32,7 +33,7 @@ gulp.task('generate-app-icon', function () {
     gulp.src('img/icon/udacity-icon.png')
         .pipe(imagemin({
             progressive: true,
-            use: [imageminPngquant()]
+            use: [imageminPngquant(),imageminJpegtran()]
         }))
         .pipe(gulp.dest('dist/img/icon'));
     gulp.src('img/icon/udacity-icon.png')
@@ -131,7 +132,7 @@ gulp.task('watch:js', function () {
 });
 
 gulp.task('styles', function () {
-    gulp.src('sass/**/main.scss')
+    gulp.src(['sass/**/main.scss'])
         .pipe(sass({
             'outputStyle': 'compressed'
         }).on('error', sass.logError))

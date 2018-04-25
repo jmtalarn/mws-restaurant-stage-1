@@ -73,18 +73,52 @@ const fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
+
+    const map = document.getElementById('map');
     let loc = {
         lat: 40.722216,
         lng: -73.987501
     };
-    self.map = new google.maps.Map(document.getElementById('map'), {
+    self.map = new google.maps.Map( map, {
         zoom: 12,
         center: loc,
         scrollwheel: false
     });
     updateRestaurants();
-}
 
+}
+const lazyLoadImages = () =>{
+
+    const images = document.querySelectorAll('.restaurant-img');
+
+    const config = {
+    // If the image gets within 50px in the Y axis, start the download.
+    rootMargin: '50px 0px',
+    threshold: 0.01
+    };
+    if (!('IntersectionObserver' in window)) {
+        Array.from(images).forEach(image => image.src=image.dataset.src);
+    } else {
+        // The observer for the images on the page
+        let observer = new IntersectionObserver((entries)=> {
+            // Loop through the entries
+            entries.forEach(entry => {
+              // Are we in viewport?
+              if (entry.intersectionRatio > 0) {
+          
+                // Stop watching and load the image
+                observer.unobserve(entry.target);
+                entry.target.src=entry.target.dataset.src;
+              }
+            });
+        }, config);
+      
+        
+        images.forEach(image => {
+            observer.observe(image);
+        });
+    }
+}
 /**
  * Update page and map for current restaurants.
  */
@@ -131,7 +165,15 @@ const fillRestaurantsHTML = (restaurants = self.restaurants) => {
     restaurants.forEach(restaurant => {
         ul.append(createRestaurantHTML(restaurant));
     });
+    if (document.getElementById('map-container').classList.contains('hide'))
+        document.getElementById('map-container').classList.toggle('hide');
+    if (document.getElementById('restaurants-list').classList.contains('hide'))
+        document.getElementById('restaurants-list').classList.toggle('hide');
+    if (!document.getElementById('map-loading').classList.contains('hide'))
+        document.getElementById('map-loading').classList.toggle('hide');
+    lazyLoadImages();
     addMarkersToMap();
+    
 }
 
 /**
@@ -150,16 +192,12 @@ const createRestaurantHTML = (restaurant) => {
     image.setAttribute('alt', `This is a representative image of the restaurant ${restaurant.name}`);
     image.setAttribute('tabindex', '0');
     image.title = `${restaurant.name}`;
-    image.src = 'img/Map_placeholder.svg';
+
     const imageSrc = DBHelper.imageUrlForRestaurant(restaurant);
-    if (!/\.svg$/.test(imageSrc)){    
-        image.setAttribute('data-src', `${imageSrc}-small.jpg`);
-        setTimeout(()=>{
-                image.setAttribute('src', image.getAttribute('data-src'));
-                image.onload = function() {
-                   image.removeAttribute('data-src');
-                };
-            },100)
+    if (/\.svg$/.test(imageSrc)){    
+        image.dataset.src = imageSrc;
+    }else{
+        image.dataset.src = `${imageSrc}-small.jpg`;
     }
    
     li.append(image);

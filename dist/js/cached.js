@@ -1,2 +1,0 @@
-const CACHE_NAME="mws-restaurant-cache";caches.open(CACHE_NAME).then(function(e){console.log(e);const t=document.getElementById("cached-list");e.keys().then(n=>n.filter(e=>/\.html\?(id=\d*)$/gm.test(e.url)).forEach(n=>{e.match(n).then(e=>e.text()).then(e=>{const c=(new window.DOMParser).parseFromString(e,"text/html").title,r=document.createElement("LI"),l=document.createElement("A");l.href=n.url,l.innerHTML=`${c} ${n.url}`,r.appendChild(l),t.appendChild(r)})}))});
-//# sourceMappingURL=../maps/js/cached.js.map

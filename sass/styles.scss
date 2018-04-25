@@ -145,9 +145,19 @@ nav h1 a {
 /* ====================== Map ====================== */
 
 #map {
-  height: 400px;
   width: 100%;
   background-color: #ccc;
+  height: 400px;
+  
+  .map-loading{
+    font-size: 3rem;
+    color: darkgrey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:400px;  
+    
+  }
 }
 
 /* ====================== Restaurant Filtering ====================== */
@@ -348,4 +358,8 @@ nav h1 a {
 #cached-list  li a{
   font-size:1.2em;
   font-weight: bold;
+}
+
+.hide{
+  display: none;
 }

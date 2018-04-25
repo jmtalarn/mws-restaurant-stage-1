@@ -61,12 +61,13 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     image.title=`${restaurant.name}`;
     image.className = 'restaurant-img';
     const imageSrc = DBHelper.imageUrlForRestaurant(restaurant);
-
-    image.src = imageSrc;
-    if (!/\.svg$/.test(imageSrc)){    
-        image.srcset = `${imageSrc}-small.jpg 320w,
+ 
+    if (!/\.svg$/.test(imageSrc)){
+        image.setAttribute('src' ,imageSrc); 
+        image.setAttribute('srcset', `${imageSrc}-small.jpg 320w,
                                         ${imageSrc}-medium.jpg 640w,
-                                        ${imageSrc}.jpg 800w`;
+                                        ${imageSrc}.jpg 800w`);
+
         image.sizes = '(max-width: 800px) 100vw, 800px';
     }
     const cuisine = document.getElementById('restaurant-cuisine');
