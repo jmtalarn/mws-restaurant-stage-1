@@ -165,12 +165,6 @@ const fillRestaurantsHTML = (restaurants = self.restaurants) => {
     restaurants.forEach(restaurant => {
         ul.append(createRestaurantHTML(restaurant));
     });
-    if (document.getElementById('map-container').classList.contains('hide'))
-        document.getElementById('map-container').classList.toggle('hide');
-    if (document.getElementById('restaurants-list').classList.contains('hide'))
-        document.getElementById('restaurants-list').classList.toggle('hide');
-    if (!document.getElementById('map-loading').classList.contains('hide'))
-        document.getElementById('map-loading').classList.toggle('hide');
     lazyLoadImages();
     addMarkersToMap();
     

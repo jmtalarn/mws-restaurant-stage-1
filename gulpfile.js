@@ -1,71 +1,82 @@
-var gulp = require('gulp');
-var imageResize = require('gulp-image-resize');
-var rename = require('gulp-rename');
-var browserSync = require('browser-sync').create();
-var eslint = require('gulp-eslint');
-var jasmine = require('gulp-jasmine-phantom');
-var debug = require('gulp-debug');
-var concat = require('gulp-concat');
-var sass = require('gulp-sass');
-var autoprefixer = require('gulp-autoprefixer');
-var uglifyes = require('uglify-es');
-var composer = require('gulp-uglify/composer');
-var uglify = composer(uglifyes, console);
-var sourcemaps = require('gulp-sourcemaps');
+const gulp = require('gulp');
+const imageResize = require('gulp-image-resize');
+const rename = require('gulp-rename');
+const browserSync = require('browser-sync').create();
+const eslint = require('gulp-eslint');
+const jasmine = require('gulp-jasmine-phantom');
+const debug = require('gulp-debug');
+const concat = require('gulp-concat');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const uglifyes = require('uglify-es');
+const composer = require('gulp-uglify/composer');
+const uglify = composer(uglifyes, console);
+const sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const imageminJpegtran = require('imagemin-jpegtran');
+const imageminSvgo = require('imagemin-svgo');
+const inlineCss = require('gulp-inline-css');
 
-gulp.task('build', ['generate-images', 'generate-app-icon', 'copy-html', 'styles', 'scripts']);
+gulp.task('build', ['generate-images', 'generate-app-icon', 'styles', 'copy-html','copy-json', 'scripts']);
 
-gulp.task('copy-html', function () {
-    gulp.src(['**/*.html', '**/*.json', '!node_modules/**/*', '!server/**/*', '!dist/**/*'])
+gulp.task('copy-html',['styles'], function () {
+    gulp.src(['src/**/*.html'])
+    //.pipe(inlineCss())
+        .pipe(gulp.dest('dist'));
+});
+gulp.task('copy-json', function () {
+    gulp.src(['src/**/*.json'])
         .pipe(gulp.dest('dist'));
 });
 gulp.task('watch:html', function () {
     gulp.watch([
-        '**/*.html',
-        '**/*.json',
+        'src/**/*.html',
+        'src/**/*.json',
         '!node_modules/**/*', '!server/**/*', '!dist/**/*'
     ], ['copy-html']);
 });
 gulp.task('generate-app-icon', function () {
-    gulp.src('img/icon/udacity-icon.png')
+    gulp.src('src/img/icon/udacity-icon.png')
         .pipe(imagemin({
             progressive: true,
-            use: [imageminPngquant(),imageminJpegtran()]
+            optimizationLevel: 5,
+            use: [imageminPngquant()]
         }))
         .pipe(gulp.dest('dist/img/icon'));
-    gulp.src('img/icon/udacity-icon.png')
+    gulp.src('src/img/icon/udacity-icon.png')
         .pipe(imageResize({
             width: 48
         }))
         .pipe(imagemin({
             progressive: true,
+            optimizationLevel: 5,
             use: [imageminPngquant()]
         }))
         .pipe(rename(function (path) {
             path.basename += '-1x';
         }))
         .pipe(gulp.dest('dist/img/icon'));
-    gulp.src('img/icon/udacity-icon.png')
+    gulp.src('src/img/icon/udacity-icon.png')
         .pipe(imageResize({
             width: 96
         }))
         .pipe(imagemin({
             progressive: true,
+            optimizationLevel: 5,
             use: [imageminPngquant()]
         }))
         .pipe(rename(function (path) {
             path.basename += '-2x';
         }))
         .pipe(gulp.dest('dist/img/icon'));
-    gulp.src('img/icon/udacity-icon.png')
+    gulp.src('src/img/icon/udacity-icon.png')
         .pipe(imageResize({
             width: 48
         }))
         .pipe(imagemin({
             progressive: true,
+            optimizationLevel: 5,
             use: [imageminPngquant()]
         }))
         .pipe(rename(function (path) {
@@ -74,41 +85,50 @@ gulp.task('generate-app-icon', function () {
         .pipe(gulp.dest('dist/img/icon'));
 });
 gulp.task('generate-images', function () {
-    gulp.src(['img/**/*.{jpg,png}', '!img/icon/**/*'])
+    gulp.src(['src/img/**/*.{jpg,png}', '!src/img/icon/**/*'])
         .pipe(imageResize({
             width: 350
         }))
         .pipe(imagemin({
             progressive: true,
-            use: [imageminPngquant()]
+            use: [imageminPngquant(), imageminJpegtran()]
         }))
         .pipe(rename(function (path) {
             path.basename += '-small';
         }))
         .pipe(gulp.dest('dist/img'));
-    gulp.src(['img/**/*.{jpg,png}', '!img/icon/**/*'])
+    gulp.src(['src/img/**/*.{jpg,png}', '!src/img/icon/**/*'])
         .pipe(imageResize({
             width: 640
         }))
         .pipe(imagemin({
             progressive: true,
-            use: [imageminPngquant()]
+            use: [imageminPngquant(), imageminJpegtran()]
         }))
         .pipe(rename(function (path) {
             path.basename += '-medium';
         }))
         .pipe(gulp.dest('dist/img'));
-    gulp.src(['img/**/*.{jpg,png}', '!img/icon/**/*'])
+    gulp.src(['src/img/**/*.{jpg,png}', '!src/img/icon/**/*'])
         .pipe(imagemin({
             progressive: true,
-            use: [imageminPngquant()]
+            use: [imageminPngquant(), imageminJpegtran()]
         }))
         .pipe(gulp.dest('dist/img'));
-    gulp.src(['img/**/*.svg'])
+    gulp.src(['src/img/**/*.svg'])
+        .pipe(imagemin({
+            use: [
+                imageminSvgo({
+                    plugins: [{
+                        removeViewBox: false
+                    }]
+                })
+            ]
+        }))
         .pipe(gulp.dest('dist/img'));
 });
 gulp.task('minify', function () {
-    gulp.src(['**/*.js', '!gulpfile.js','!spec/**/*.js', '!node_modules/**/*', '!server/**/*', '!dist/**/*'])
+    gulp.src(['src/**/*.js'])
         .pipe(sourcemaps.init())
         //.pipe(concat('main.js'))
         .pipe(uglify().on('error', function (e) {
@@ -118,21 +138,20 @@ gulp.task('minify', function () {
         .pipe(gulp.dest('dist'));
 });
 gulp.task('lint', function () {
-    return gulp.src(['**/*.js', '!node_modules/**/*', '!server/**/*', '!dist/**/*'])
+    return gulp.src(['src/**/*.js'])
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failOnError());
 });
-gulp.task('scripts', ['lint', 'minify']);
+gulp.task('scripts', ['minify']);
 gulp.task('watch:js', function () {
     gulp.watch([
-        '**/*.js',
-        '!node_modules/**/*', '!server/**/*', '!dist/**/*'
+        'src/**/*.js'
     ], ['scripts']);
 });
 
 gulp.task('styles', function () {
-    gulp.src(['sass/**/main.scss'])
+    return gulp.src(['src/sass/**/main.scss'])
         .pipe(sass({
             'outputStyle': 'compressed'
         }).on('error', sass.logError))
@@ -142,23 +161,23 @@ gulp.task('styles', function () {
         .pipe(gulp.dest('dist/css'));
 });
 gulp.task('watch:css', function () {
-    gulp.watch('sass/**/*.scss', ['styles']);
+    gulp.watch('src/sass/**/*.scss', ['styles']);
 });
 
-gulp.task('tests', function () {
+gulp.task('tests', ['lint'], function () {
 
     gulp.src(['spec/**/*.js'])
         .pipe(debug())
         .pipe(jasmine({
             verbose: true,
             integration: true,
-            vendor: ['js/**/*.js']
+            vendor: ['src/js/**/*.js']
         }));
 
 });
 
 // Static server
-gulp.task('default', ['build', 'watch:html', 'watch:css', 'watch:js'], function () {
+gulp.task('watch', ['build', 'watch:html', 'watch:css', 'watch:js'], function () {
     browserSync.init({
         server: {
             baseDir: './dist'
@@ -171,3 +190,6 @@ gulp.task('default', ['build', 'watch:html', 'watch:css', 'watch:js'], function 
     gulp.watch(['dist/**/*'])
         .on('change', browserSync.reload);
 });
+
+gulp.task('default', ['watch']);
+

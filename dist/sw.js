@@ -1,0 +1,2 @@
+const CACHE_NAME="mws-restaurant-cache";self.addEventListener("install",function(t){t.waitUntil(caches.open(CACHE_NAME).then(function(t){return t.addAll(["/cached.html","/js/main.js"])}))}),self.addEventListener("fetch",function(t){t.respondWith(caches.open(CACHE_NAME).then(function(e){return fetch(t.request).then(function(n){return e.put(t.request,n.clone()),n}).catch(n=>e.match(t.request).then(t=>t||e.match("/cached.html")))}))});
+//# sourceMappingURL=maps/sw.js.map
