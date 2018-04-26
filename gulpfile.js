@@ -17,6 +17,7 @@ const imageminPngquant = require('imagemin-pngquant');
 const imageminJpegtran = require('imagemin-jpegtran');
 const imageminSvgo = require('imagemin-svgo');
 const inlineCss = require('gulp-inline-css');
+const webp = require('gulp-webp');
 
 gulp.task('build', ['generate-images', 'generate-app-icon', 'styles', 'copy-html','copy-json', 'scripts']);
 
@@ -93,6 +94,7 @@ gulp.task('generate-images', function () {
             progressive: true,
             use: [imageminPngquant(), imageminJpegtran()]
         }))
+        .pipe(webp())
         .pipe(rename(function (path) {
             path.basename += '-small';
         }))
@@ -105,6 +107,7 @@ gulp.task('generate-images', function () {
             progressive: true,
             use: [imageminPngquant(), imageminJpegtran()]
         }))
+        .pipe(webp())
         .pipe(rename(function (path) {
             path.basename += '-medium';
         }))
@@ -114,6 +117,7 @@ gulp.task('generate-images', function () {
             progressive: true,
             use: [imageminPngquant(), imageminJpegtran()]
         }))
+        .pipe(webp())
         .pipe(gulp.dest('dist/img'));
     gulp.src(['src/img/**/*.svg'])
         .pipe(imagemin({

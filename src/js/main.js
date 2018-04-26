@@ -191,9 +191,9 @@ const createRestaurantHTML = (restaurant) => {
     if (/\.svg$/.test(imageSrc)){    
         image.dataset.src = imageSrc;
     }else{
-        image.dataset.src = `${imageSrc}-small.jpg`;
+        image.dataset.src = `${imageSrc.replace('\.webp$','-small.webp')}`;
     }
-   
+    image.onerror = ()=>{ this.onerror=null; this.src=this.src.replace("\.webp$","jpg") }
     li.append(image);
     const div = document.createElement('div');
     div.className = 'restaurant-description';

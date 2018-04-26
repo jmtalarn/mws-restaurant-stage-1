@@ -143,7 +143,7 @@ class DBHelper {
      */
     static imageUrlForRestaurant(restaurant) {
         if (restaurant.photograph){
-            return (`/img/${restaurant.photograph}`);
+            return (`/img/${restaurant.photograph}.webp`);
         }
         return ('/img/Map_placeholder.svg');
     }

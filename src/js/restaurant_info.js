@@ -64,9 +64,12 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
  
     if (!/\.svg$/.test(imageSrc)){
         image.setAttribute('src' ,imageSrc); 
-        image.setAttribute('srcset', `${imageSrc}-small.jpg 320w,
-                                        ${imageSrc}-medium.jpg 640w,
-                                        ${imageSrc}.jpg 800w`);
+        image.setAttribute('srcset', `${imageSrc.replace(/\.webp$/,'-small.webp')} 320w,
+                                      ${imageSrc.replace(/\.webp$/,'-medium.webp')} 640w,
+                                      ${imageSrc} 800w`);
+        image.onerror = ()=>{ this.onerror=null; this.src=this.src.replace(/\.webp$/,"jpg"); this.srcset=`${imageSrc.replace(/\.webp$/,'-small.jpg')} 320w,
+        ${imageSrc.replace(/\.webp$/,'-medium.jpg')} 640w,
+        ${imageSrc.replace(/\.webp$/,'.jpg')}.jpg 800w` }
 
         image.sizes = '(max-width: 800px) 100vw, 800px';
     }
