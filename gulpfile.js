@@ -132,14 +132,24 @@ gulp.task('generate-images', function () {
         .pipe(gulp.dest('dist/img'));
 });
 gulp.task('minify', function () {
-    gulp.src(['src/**/*.js'])
+    gulp.src(['src/**/*.js','node_modules/idb/lib/idb.js'])
+        .pipe(sourcemaps.init())
+        //.pipe(concat('main.js'))
+        /*.pipe(uglify().on('error', function (e) {
+            console.log(e);
+        }))*/
+        .pipe(sourcemaps.write('maps'))
+        .pipe(gulp.dest('dist'));
+});
+gulp.task('import-nodemodules', function () {
+    gulp.src(['node_modules/idb/lib/idb.js'])
         .pipe(sourcemaps.init())
         //.pipe(concat('main.js'))
         .pipe(uglify().on('error', function (e) {
             console.log(e);
         }))
         .pipe(sourcemaps.write('maps'))
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest('dist/js'));
 });
 gulp.task('lint', function () {
     return gulp.src(['src/**/*.js'])
@@ -147,7 +157,7 @@ gulp.task('lint', function () {
         .pipe(eslint.format())
         .pipe(eslint.failOnError());
 });
-gulp.task('scripts', ['minify']);
+gulp.task('scripts', ['minify','import-nodemodules']);
 gulp.task('watch:js', function () {
     gulp.watch([
         'src/**/*.js'

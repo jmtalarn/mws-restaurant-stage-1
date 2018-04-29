@@ -1,10 +1,10 @@
-/*global google DBHelper*/
+/*global google DBHelper */
 let restaurants,
     neighborhoods,
     cuisines;
 var map
 var markers = []
-
+ 
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -18,14 +18,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
  * Fetch all neighborhoods and set their HTML.
  */
 const fetchNeighborhoods = () => {
-    DBHelper.fetchNeighborhoods((error, neighborhoods) => {
-        if (error) { // Got an error
-            console.error(error);
-        } else {
+    DBHelper.getNeighborhoods()
+        .then(neighborhoods => {
             self.neighborhoods = neighborhoods;
             fillNeighborhoodsHTML();
-        }
-    });
+        }).catch(error=> console.error(error));
 }
 
 /**
@@ -45,14 +42,13 @@ const fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
  * Fetch all cuisines and set their HTML.
  */
 const fetchCuisines = () => {
-    DBHelper.fetchCuisines((error, cuisines) => {
-        if (error) { // Got an error!
-            console.error(error);
-        } else {
+
+    DBHelper.getCuisines()
+        .then(cuisines => {
             self.cuisines = cuisines;
             fillCuisinesHTML();
-        }
-    });
+        }).catch(error=> console.error(error));
+
 }
 
 /**
@@ -132,14 +128,14 @@ const updateRestaurants = () => {
     const cuisine = cSelect[cIndex].value;
     const neighborhood = nSelect[nIndex].value;
 
-    DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
-        if (error) { // Got an error!
-            console.error(error);
-        } else {
+    DBHelper.getRestaurantsByCuisineAndNeighborhood(cuisine, neighborhood)
+        .then(restaurants=>{
             resetRestaurants(restaurants);
             fillRestaurantsHTML();
-        }
-    })
+        })
+        .catch(error=>console.error)
+    
+        
 }
 
 /**
