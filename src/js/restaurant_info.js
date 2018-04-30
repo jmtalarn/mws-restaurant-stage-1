@@ -34,13 +34,13 @@ const fetchRestaurantFromURL = (callback) => {
         const error = 'No restaurant id in URL'
         callback(error, null);
     } else {
-        DBHelper.getRestaurantById(id)
+        DBHelper.getRestaurantById(parseInt(id))
             .then(restaurant=>{
                 self.restaurant = restaurant;
                 fillRestaurantHTML();
                 callback(null, restaurant);
-             })
-             .catch(error=>{ console.error(error); callback(error, null);});
+            })
+            .catch(error=>{ console.error(error); callback(error, null);});
 
     }
 }
@@ -59,7 +59,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     image.setAttribute('alt',`This is a representative image of the restaurant ${restaurant.name}`);
     image.title=`${restaurant.name}`;
     image.className = 'restaurant-img';
-    const imageSrc = DBHelper.getRestaurantImageUrl(restaurant);
+    const imageSrc = DBHelper.imageUrlForRestaurant(restaurant);
  
     if (!/\.svg$/.test(imageSrc)){
         image.setAttribute('src' ,imageSrc); 

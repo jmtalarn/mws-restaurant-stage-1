@@ -16,14 +16,12 @@ const imagemin = require('gulp-imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const imageminJpegtran = require('imagemin-jpegtran');
 const imageminSvgo = require('imagemin-svgo');
-const inlineCss = require('gulp-inline-css');
 const webp = require('gulp-webp');
 
 gulp.task('build', ['generate-images', 'generate-app-icon', 'styles', 'copy-html','copy-json', 'scripts']);
 
 gulp.task('copy-html',['styles'], function () {
     gulp.src(['src/**/*.html'])
-    //.pipe(inlineCss())
         .pipe(gulp.dest('dist'));
 });
 gulp.task('copy-json', function () {
@@ -135,9 +133,9 @@ gulp.task('minify', function () {
     gulp.src(['src/**/*.js','node_modules/idb/lib/idb.js'])
         .pipe(sourcemaps.init())
         //.pipe(concat('main.js'))
-        /*.pipe(uglify().on('error', function (e) {
+        .pipe(uglify().on('error', function (e) {
             console.log(e);
-        }))*/
+        }))
         .pipe(sourcemaps.write('maps'))
         .pipe(gulp.dest('dist'));
 });

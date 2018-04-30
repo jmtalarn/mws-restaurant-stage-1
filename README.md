@@ -14,10 +14,15 @@ You have been provided the code for a restaurant reviews website. The code has a
 ### Note about ES6
 Most of the code in this project has been written to the ES6 JavaScript specification for compatibility with modern web browsers and future proofing JavaScript code. As much as possible, try to maintain use of ES6 in any additional JavaScript you write. 
 
-### How to start it
+### How to start
 1. First of all do a `npm install` to install the required npm packages
-2. Run `npm start` command. That will launch the default `gulp`  task which will run the resizing images task and run a server
-    - `gulp serve` will run a server
-    - `gulp generate-images` will create in the img folder the image resources
-3. If you want live updating of your browser while you editing the files you can start with `gulp browser-sync`
+ - The gulp plugin used to resize images https://www.npmjs.com/package/gulp-image-resize requires the `imagemagick` and `graphicsmagick` software to be installed
+2. Run the git command to update the server app included as submodule `git submodule update --recursive --remote`
+3. Run `npm start` command. That will launch two things:
+ - The server module
+ - The default `gulp` task with development purposes with live reload while you're editing. Running also the client in the port 8000
+
+### Build only and run the apps separately
+If you want to only build the app you should run `gulp build`. Run the content of the `dist` folder in port `8000`, run the server app on port `1337`.
+
 

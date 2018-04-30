@@ -47,12 +47,6 @@ DBHelper = (function () {
             }).then(t => console.log("Loaded restaurants data"))
 
     });
-
-
-
-
-
-
     return {
         getAllRestaurants: () => {
             return dbPromise.then(db => {
@@ -66,7 +60,6 @@ DBHelper = (function () {
                     .objectStore(RESTAURANTS).get(id);
             });
         },
-
         getCuisines: () => {
             let keys = new Set();
             return dbPromise
@@ -79,8 +72,7 @@ DBHelper = (function () {
                         keys.add(cursor.key);
                         return cursor.continue().then(cursorKeyIterate);
                     })).then(() => {
-                    console.log(Array.from(keys));
-                    return Array.from(keys)
+                    return Array.from(keys);
                 });
         },
 
@@ -104,11 +96,10 @@ DBHelper = (function () {
             var restaurants = [];
             return dbPromise
                 .then(db => {
-                    db.transaction(RESTAURANTS)
+                    return db.transaction(RESTAURANTS)
                         .objectStore(RESTAURANTS)
                         .index('by-cuisine').openCursor(IDBKeyRange.only(cuisine)).then(function cursorIterate(cursor) {
                             if (!cursor) return;
-                            console.log(cursor.value);
                             restaurants.push(cursor.value);
                             return cursor.continue().then(cursorIterate);
                         }).then(() => {
@@ -120,13 +111,12 @@ DBHelper = (function () {
             var restaurants = [];
             return dbPromise
                 .then(db => {
-                    db.transaction(RESTAURANTS)
+                    return db.transaction(RESTAURANTS)
                         .objectStore(RESTAURANTS)
                         .index('by-neighborhood')
                         .openCursor(IDBKeyRange.only(neighborhood))
                         .then(function cursorIterate(cursor) {
                             if (!cursor) return;
-                            console.log(cursor.value);
                             restaurants.push(cursor.value);
                             return cursor.continue().then(cursorIterate);
                         }).then(() => {
@@ -145,13 +135,12 @@ DBHelper = (function () {
             } else {
                 return dbPromise.then(db => {
                     var restaurants = [];
-                    db.transaction(RESTAURANTS)
+                    return db.transaction(RESTAURANTS)
                         .objectStore(RESTAURANTS)
                         .index('by-neighborhood-cuisine')
                         .openCursor(IDBKeyRange.only([neighborhood, cuisine]))
                         .then(function cursorIterate(cursor) {
                             if (!cursor) return;
-                            console.log(cursor.value);
                             restaurants.push(cursor.value);
                             return cursor.continue().then(cursorIterate);
                         }).then(() => {
