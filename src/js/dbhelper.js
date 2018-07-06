@@ -6,8 +6,8 @@ DBHelper = (function () {
 
     const port = 1337; // Change this to your server port
     const DATABASE_URL = `http://localhost:${port}/restaurants/`;
-    const DB_NAME = `restaurant-reviews`;
-    const RESTAURANTS = `restaurants`;
+    const DB_NAME = 'restaurant-reviews';
+    const RESTAURANTS = 'restaurants';
 
     dbPromise = idb.open(DB_NAME, 1, (upgradeDb) => {
         var store = upgradeDb.createObjectStore(RESTAURANTS, {
@@ -40,11 +40,11 @@ DBHelper = (function () {
             .then(json => {
                 const tx = db.transaction(RESTAURANTS, 'readwrite');
                 json.forEach(restaurant => {
-                    tx.objectStore(RESTAURANTS).put(restaurant)
+                    tx.objectStore(RESTAURANTS).put(restaurant);
                 });
                 return tx.complete;
 
-            }).then(t => console.log("Loaded restaurants data"))
+            }).then(t => console.log('Loaded restaurants data'));
 
     });
     return {
@@ -88,7 +88,7 @@ DBHelper = (function () {
                         keys.add(cursor.key);
                         return cursor.continue().then(cursorKeyIterate);
                     })).then(() => {
-                    return Array.from(keys)
+                    return Array.from(keys);
                 });
 
         },
@@ -104,7 +104,7 @@ DBHelper = (function () {
                             return cursor.continue().then(cursorIterate);
                         }).then(() => {
                             return restaurants;
-                        })
+                        });
                 });
         },
         getRestaurantsByNeighborhood: (neighborhood) => {
@@ -121,7 +121,7 @@ DBHelper = (function () {
                             return cursor.continue().then(cursorIterate);
                         }).then(() => {
                             return restaurants;
-                        })
+                        });
                 });
         },
 
@@ -145,21 +145,22 @@ DBHelper = (function () {
                             return cursor.continue().then(cursorIterate);
                         }).then(() => {
                             return restaurants;
-                        })
-                })
+                        });
+                });
             }
         },
         /**
          * Map marker for a restaurant.
          */
-        mapMarkerForRestaurant: (restaurant, map) => {
-            const marker = new google.maps.Marker({
-                position: restaurant.latlng,
-                title: restaurant.name,
-                url: DBHelper.urlForRestaurant(restaurant),
-                map: map,
-                animation: google.maps.Animation.DROP
-            });
+        mapMarkerForRestaurant: (restaurant, map)=>{
+            // https://leafletjs.com/reference-1.3.0.html#marker  
+            const marker = new L.marker([ restaurant.latlng.lat, restaurant.latlng.lng ],
+                {
+                    title: restaurant.name,
+                    alt: restaurant.name,
+                    url: DBHelper.urlForRestaurant(restaurant)
+                });
+            marker.addTo(newMap);
             return marker;
         },
         urlForRestaurant: (restaurant) => (
@@ -170,6 +171,6 @@ DBHelper = (function () {
         )
 
 
-    }
+    };
 
 })();

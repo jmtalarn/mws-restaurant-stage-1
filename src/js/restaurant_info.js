@@ -1,37 +1,52 @@
 /*global google DBHelper*/
 let restaurant;
-var map;
+var newMap;
 
 /**
- * Initialize Google map, called from HTML.
+ * Initialize map as soon as the page is loaded.
  */
-window.initMap = () => {
+document.addEventListener('DOMContentLoaded', (event) => {
+    initMap();
+});
+
+/**
+ * Initialize leaflet map
+ */
+initMap = () => {
     fetchRestaurantFromURL((error, restaurant) => {
         if (error) { // Got an error!
             console.error(error);
         } else {
-            self.map = new google.maps.Map(document.getElementById('map'), {
+            self.newMap = L.map('map', {
+                center: [ restaurant.latlng.lat, restaurant.latlng.lng ],
                 zoom: 16,
-                center: restaurant.latlng,
-                scrollwheel: false
+                scrollWheelZoom: false
             });
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
+                mapboxToken: 'pk.eyJ1Ijoiam10YWxhcm4iLCJhIjoiY2pqYWphNDhhMzJ5ejNwbW5ycWNhZnVkZiJ9.xT8oDylK0cBMgHuy66xCKA',
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                id: 'mapbox.streets'
+            }).addTo(newMap);
             fillBreadcrumb();
-            DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+            DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
         }
     });
-};
+};  
 
 /**
  * Get current restaurant from page URL.
  */
 const fetchRestaurantFromURL = (callback) => {
     if (self.restaurant) { // restaurant already fetched!
-        callback(null, self.restaurant)
+        callback(null, self.restaurant);
         return;
     }
     const id = getParameterByName('id');
     if (!id) { // no id found in URL
-        const error = 'No restaurant id in URL'
+        const error = 'No restaurant id in URL';
         callback(error, null);
     } else {
         DBHelper.getRestaurantById(parseInt(id))
@@ -43,7 +58,7 @@ const fetchRestaurantFromURL = (callback) => {
             .catch(error=>{ console.error(error); callback(error, null);});
 
     }
-}
+};
 
 /**
  * Create restaurant HTML and add it to the webpage
@@ -66,9 +81,9 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
         image.setAttribute('srcset', `${imageSrc.replace(/\.webp$/,'-small.webp')} 320w,
                                       ${imageSrc.replace(/\.webp$/,'-medium.webp')} 640w,
                                       ${imageSrc} 800w`);
-        image.onerror = ()=>{ this.onerror=null; this.src=this.src.replace(/\.webp$/,"jpg"); this.srcset=`${imageSrc.replace(/\.webp$/,'-small.jpg')} 320w,
+        image.onerror = ()=>{ this.onerror=null; this.src=this.src.replace(/\.webp$/,'jpg'); this.srcset=`${imageSrc.replace(/\.webp$/,'-small.jpg')} 320w,
         ${imageSrc.replace(/\.webp$/,'-medium.jpg')} 640w,
-        ${imageSrc.replace(/\.webp$/,'.jpg')}.jpg 800w` }
+        ${imageSrc.replace(/\.webp$/,'.jpg')}.jpg 800w`; };
 
         image.sizes = '(max-width: 800px) 100vw, 800px';
     }
@@ -81,7 +96,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     }
     // fill reviews
     fillReviewsHTML();
-}
+};
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -101,7 +116,7 @@ const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hour
 
         hours.appendChild(row);
     }
-}
+};
 
 /**
  * Create all reviews HTML and add them to the webpage.
@@ -123,7 +138,7 @@ const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
         ul.appendChild(createReviewHTML(review));
     });
     container.appendChild(ul);
-}
+};
 
 /**
  * Create review HTML and add it to the webpage.
@@ -152,7 +167,7 @@ const createReviewHTML = (review) => {
     li.appendChild(comments);
 
     return li;
-}
+};
 
 /**
  * Add restaurant name to the breadcrumb navigation menu
@@ -170,7 +185,7 @@ const fillBreadcrumb = (restaurant=self.restaurant) => {
     li.appendChild(a);
     
     breadcrumb.appendChild(li);
-}
+};
 
 /**
  * Get a parameter by name from page URL.
@@ -186,4 +201,4 @@ const getParameterByName = (name, url) => {
     if (!results[2])
         return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
+};
