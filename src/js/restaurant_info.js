@@ -90,6 +90,10 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     const cuisine = document.getElementById('restaurant-cuisine');
     cuisine.innerHTML = restaurant.cuisine_type;
 
+    createFavIcon(restaurant, 'restaurant_detail', document.getElementById('restaurant-container'));
+   
+
+
     // fill operating hours
     if (restaurant.operating_hours) {
         fillRestaurantHoursHTML();

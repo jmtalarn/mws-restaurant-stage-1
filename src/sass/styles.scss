@@ -257,25 +257,39 @@ nav h1 a {
   width: calc(100% - 4.5em);
 }
 
-#restaurants-list li .fav{
+/* Restaurants fav */
+#restaurants-list li .fav,
+#restaurant-container .fav {
   position: absolute;
   top: 0;
   right: 0;
   font-size: 3rem;
 }
-#restaurants-list li .fav input[type="checkbox"]{
+
+#restaurant-container .fav {
+    top: 2rem;
+    right: 1rem;
+}
+#restaurants-list li .fav input[type="checkbox"],
+#restaurant-container .fav input[type="checkbox"] {
   width: 0;
 }
-#restaurants-list li .fav input[type="checkbox"]:checked + label{
+#restaurants-list li .fav input[type="checkbox"]:checked + label,
+#restaurant-container .fav input[type="checkbox"]:checked+label {
   color: inherit;
   text-shadow: inherit;
 }
-#restaurants-list li .fav input[type="checkbox"] + label {
+#restaurants-list li .fav input[type="checkbox"] + label,
+#restaurant-container .fav input[type="checkbox"]+label {
     color: transparent;
     text-shadow: 0 0 0 rgba(255, 255, 255, 0.5);
     transition: text-shadow 300ms ease-in;
 }
-#restaurants-list li .fav:hover input[type="checkbox"]:not(:checked) + label {
+#restaurant-container .fav input[type="checkbox"]+label {
+  text-shadow: 0 0 0 rgba(0, 0, 0, 0.5);
+}
+#restaurants-list li .fav:hover input[type="checkbox"]:not(:checked) + label,
+#restaurant-container .fav:hover input[type="checkbox"]:not(:checked)+label {
   color: transparent;
   text-shadow: 0 0 0 rgba(255, 0, 0, 0.5);
 }
@@ -316,7 +330,9 @@ nav h1 a {
   text-transform: uppercase;
   width: 90%;
 }
-
+#restaurant-container{
+  position: relative;
+}
 #restaurant-container,
 #reviews-container {
   border-bottom: 1px solid #d9d9d9;
