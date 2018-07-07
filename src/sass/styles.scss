@@ -255,6 +255,12 @@ nav h1 a {
   text-transform: uppercase;
 
   width: calc(100% - 4.5em);
+
+  transition: background-color 300ms ease-in-out;
+  &:hover,
+  &:focus {
+    background-color: #0061b5;
+  }
 }
 
 /* Restaurants fav */
@@ -354,7 +360,7 @@ nav h1 a {
 }
 
 #reviews-list {
-  margin: 0;
+  margin: 1rem 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -381,6 +387,41 @@ nav h1 a {
 #reviews-list li .date{ font-style: italic;}
 #reviews-list li .rating{font-weight: bold;font-style: italic;  color: #666;}
 
+.review-form{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-areas: "title title title title title" "text text text text button";
+  grid-template-rows: repeat(2, auto-fill);
+  grid-gap: 5px;
+  
+  .title{
+    grid-area: title;
+  }
+
+  textarea{
+    grid-area: text;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid #968c8c;
+    height: 4rem;
+   
+  }
+  input[type=submit]{
+    grid-area: button;
+
+    background-color: #CC4400;
+    text-decoration: none;
+    color: white;
+    transition: background-color 300ms ease-in-out;
+    border: 0;
+    box-shadow: 3px 3px 3px #968c8c;
+    
+    &:hover,
+    &:focus {
+      background-color: #0061b5;
+    }
+  }
+}
 
 #restaurant-hours th{
   text-align: left;
