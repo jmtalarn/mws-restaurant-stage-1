@@ -166,7 +166,6 @@ const fillRestaurantsHTML = (restaurants = self.restaurants) => {
     });
     lazyLoadImages();
     addMarkersToMap();
-    
 };
 
 /**
@@ -214,10 +213,39 @@ const createRestaurantHTML = (restaurant) => {
     more.href = DBHelper.urlForRestaurant(restaurant);
     div.append(more);
 
+    const fav = document.createElement('span');
+    fav.classList.add('fav');
+    const checkbox_id = `fav_${title_id}`;
+    const fav_label = document.createElement('label');
+
+    fav_label.setAttribute('for', checkbox_id);
+    fav_label.innerHTML = '❤️';
+
+    const favCheckbox = document.createElement('input');
+    favCheckbox.setAttribute('type','checkbox');
+    favCheckbox.setAttribute('name', 'favorite');
+    favCheckbox.setAttribute('data-id', restaurant.id);
+    favCheckbox.setAttribute('id', checkbox_id);
+    favCheckbox.addEventListener('change',  toggleRestaurantFav);
+    const is_favorite = (restaurant.is_favorite === 'true');
+    if (is_favorite)
+        favCheckbox.setAttribute('checked', 'checked');
+
+    fav.append(favCheckbox);
+    fav.append(fav_label);
+
+    div.append(fav);
+
     li.append(div);
 
     return li;
 };
+
+function toggleRestaurantFav(event){
+    DBHelper.favRestaurant(event.target.dataset.id, event.target.checked).then(() => {
+        console.log('Restaurant favs updated!');
+    });
+}
 
 /**
  * Add markers for current restaurants to the map.

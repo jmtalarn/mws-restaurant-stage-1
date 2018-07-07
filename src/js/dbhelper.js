@@ -26,8 +26,7 @@ DBHelper = (function () {
 
     });
     dbPromise.then(db => {
-
-        fetch(DATABASE_URL)
+        fetch(`${DATABASE_URL}?is_favorite=true`)
             .then(response => {
                 if (!response.ok) {
                     throw Error({
@@ -37,14 +36,27 @@ DBHelper = (function () {
                 }
                 return response.json();
             })
-            .then(json => {
-                const tx = db.transaction(RESTAURANTS, 'readwrite');
-                json.forEach(restaurant => {
-                    tx.objectStore(RESTAURANTS).put(restaurant);
-                });
-                return tx.complete;
+            .then(favorites => {
+                fetch(DATABASE_URL)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw Error({
+                                code: response.status,
+                                message: response.statusText
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(json => {
+                        const tx = db.transaction(RESTAURANTS, 'readwrite');
+                        json.forEach(restaurant => {
+                            tx.objectStore(RESTAURANTS).put(restaurant);
+                        });
+                        return tx.complete;
 
-            }).then(t => console.log('Loaded restaurants data'));
+                    }).then(t => console.log('Loaded restaurants data'));
+            });
+
 
     });
     return {
@@ -152,14 +164,13 @@ DBHelper = (function () {
         /**
          * Map marker for a restaurant.
          */
-        mapMarkerForRestaurant: (restaurant, map)=>{
+        mapMarkerForRestaurant: (restaurant, map) => {
             // https://leafletjs.com/reference-1.3.0.html#marker  
-            const marker = new L.marker([ restaurant.latlng.lat, restaurant.latlng.lng ],
-                {
-                    title: restaurant.name,
-                    alt: restaurant.name,
-                    url: DBHelper.urlForRestaurant(restaurant)
-                });
+            const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng], {
+                title: restaurant.name,
+                alt: restaurant.name,
+                url: DBHelper.urlForRestaurant(restaurant)
+            });
             marker.addTo(newMap);
             return marker;
         },
@@ -168,8 +179,28 @@ DBHelper = (function () {
         ),
         imageUrlForRestaurant: (restaurant) => (
             restaurant.photograph ? `/img/${restaurant.photograph}.webp` : '/img/Map_placeholder.svg'
-        )
-
+        ),
+        favRestaurant: (restaurantId, value) => (
+            dbPromise
+                .then(db =>
+                    fetch(`${DATABASE_URL}${restaurantId}/?is_favorite=${value}`, {
+                        method: 'PUT'
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw Error({
+                                    code: response.status,
+                                    message: response.statusText
+                                });
+                            }
+                            return response.json();
+                        }).then(restaurant => {
+                            const tx = db.transaction(RESTAURANTS, 'readwrite');
+                            tx.objectStore(RESTAURANTS).put(restaurant);
+                            return tx.complete;
+                        })
+                )
+        ),
 
     };
 
