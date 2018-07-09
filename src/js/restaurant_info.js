@@ -89,7 +89,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     }
     const cuisine = document.getElementById('restaurant-cuisine');
     cuisine.innerHTML = restaurant.cuisine_type;
-
+    setFormReviewRestaurantId(restaurant);
     createFavIcon(restaurant, 'restaurant_detail', document.getElementById('restaurant-container'));
    
 
@@ -142,6 +142,10 @@ const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     container.appendChild(ul);
 };
 
+const setFormReviewRestaurantId = (restaurant)=>{
+    const restaurantIdField = document.querySelector('#reviews-form [name=restaurant_id]');
+    restaurantIdField.value = restaurant.id;
+};
 /**
  * Create review HTML and add it to the webpage.
  */

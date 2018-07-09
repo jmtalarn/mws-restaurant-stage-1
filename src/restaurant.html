@@ -54,9 +54,12 @@
     <!-- Beginning reviews -->
     <section id="reviews-container" tabindex="0">
       <h3>Reviews</h3>
-      <form action="" class="review-form">
+      <form id="reviews-form" method="post" action="/reviews/" class="review-form">
         <div class="title">Your opinion matters ...</div>
-        <textarea placeholder="Write your review here"></textarea>
+        <input type="hidden" name="restaurant_id" value="" />
+        <input type="text" aria-label="Your name" name="name" placeholder="Your name..." />
+        <input type="number" placeholder="Your rating from 0 to 5" aria-label="Set your rating from 0 to 5" name="rating" step="1" min="0" max="5" />
+        <textarea name="comments" aria-label="Write your comment here" placeholder="Write your review here"></textarea>
         <input type="submit" value="Send your review" />
       </form>
       <ul id="reviews-list" ></ul>

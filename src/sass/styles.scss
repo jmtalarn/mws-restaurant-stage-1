@@ -390,21 +390,34 @@ nav h1 a {
 .review-form{
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-areas: "title title title title title" "text text text text button";
+  grid-template-areas: "title title title title title" "name name name name rating"  "text text text text button";
   grid-template-rows: repeat(2, auto-fill);
   grid-gap: 5px;
   
   .title{
     grid-area: title;
   }
-
+  input[name=name]{ grid-area: name;}
+  input[name=rating]{ grid-area: rating; }
   textarea{
     grid-area: text;
+    height: 4rem;
+  }
+  textarea, input[type=text], input[type=number]{
     background-color: transparent;
     border: 0;
     border-bottom: 1px solid #968c8c;
-    height: 4rem;
-   
+    min-height: 3rem;
+  }
+  input[type=number] {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+    color: #424040;
+
+    &::placeholder{
+      font-size: .6rem;
+    }
   }
   input[type=submit]{
     grid-area: button;
