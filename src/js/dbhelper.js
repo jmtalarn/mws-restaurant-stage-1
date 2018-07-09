@@ -5,11 +5,14 @@
 DBHelper = (function () {
 
     const port = 1337; // Change this to your server port
-    const DATABASE_URL = `http://localhost:${port}/restaurants/`;
-    const DB_NAME = 'restaurant-reviews';
+    const API_BASEURL = `http://localhost:${port}`;
+    const API_RESTAURANTS = `${API_BASEURL}/restaurants/`;
+    const API_REVIEWS = `${API_BASEURL}/reviews/`;
+    const DB_RESTAURANTS = 'restaurant-reviews';
     const RESTAURANTS = 'restaurants';
+    const REVIEWS = 'reviews';
 
-    dbPromise = idb.open(DB_NAME, 1, (upgradeDb) => {
+    dbPromise = idb.open(DB_RESTAURANTS, 2, (upgradeDb) => {
         var store = upgradeDb.createObjectStore(RESTAURANTS, {
             keyPath: 'id'
         });
@@ -22,11 +25,14 @@ DBHelper = (function () {
         store.createIndex('by-neighborhood-cuisine', ['neighborhood', 'cuisine_type'], {
             unique: false
         });
-
+        var reviews_store = upgradeDb.createObjectStore(REVIEWS, { keyPath: 'id'});
+        reviews_store.createIndex('by-restaurant', 'restaurant_id', {
+            unique: false
+        });
 
     });
     dbPromise.then(db => {
-        fetch(`${DATABASE_URL}?is_favorite=true`)
+        fetch(`${API_RESTAURANTS}?is_favorite=true`)
             .then(response => {
                 if (!response.ok) {
                     throw Error({
@@ -37,7 +43,7 @@ DBHelper = (function () {
                 return response.json();
             })
             .then(favorites => {
-                fetch(DATABASE_URL)
+                fetch(API_RESTAURANTS)
                     .then(response => {
                         if (!response.ok) {
                             throw Error({
@@ -71,6 +77,45 @@ DBHelper = (function () {
                 return db.transaction(RESTAURANTS)
                     .objectStore(RESTAURANTS).get(id);
             });
+        },
+        getReviewsForRestaurant: (restaurant_id) => {
+            fetch(`${API_REVIEWS}/?restaurant_id=${restaurant_id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return; 
+                    }
+                    return response.json();
+                })
+                .then(json => (json? json.reduce((acc,curr)=>{ acc[curr.id]=curr; return acc; },{}):json ) )
+                .then(map => {
+                    //if map undefined error proceed without update
+                    // if map proceed to update 
+                    const reviews = [];
+                    return dbPromise
+                        .then(db => db.transaction(REVIEWS)
+                            .objectStore(REVIEWS)
+                            .index('by-restaurant')
+                            .openKeyCursor(IDBKeyRange.only(restaurant_id))
+                            .then(function cursorKeyIterate(cursor) {
+                                if (!cursor) return;
+                                const review = cursor.value;
+                                if (map){
+                                    if (map[review.id].updatedAt > review.updatedAt) {
+                                        //update IndexedDB
+                                        review.flag = '1';
+                                        cursor.update(review);
+                                    } else if (map[cursor.value.id].updatedAt < cursor.value.updatedAt) {
+                                        //update backend with API
+                                        fetch(POST REVIEW){}
+                                    }
+                                }
+                                reviews.push(cursor.value);
+
+                                return cursor.continue().then(cursorKeyIterate);
+                            })).then(()=>{return reviews;});
+
+                }).then(t => console.log('Loaded restaurant reviews'))
+                .catch(err=>{ console.error(err); });
         },
         getCuisines: () => {
             let keys = new Set();
@@ -183,7 +228,7 @@ DBHelper = (function () {
         favRestaurant: (restaurantId, value) => (
             dbPromise
                 .then(db =>
-                    fetch(`${DATABASE_URL}${restaurantId}/?is_favorite=${value}`, {
+                    fetch(`${API_RESTAURANTS}${restaurantId}/?is_favorite=${value}`, {
                         method: 'PUT'
                     })
                         .then(response => {
