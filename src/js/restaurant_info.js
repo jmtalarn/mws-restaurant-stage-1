@@ -90,6 +90,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     const cuisine = document.getElementById('restaurant-cuisine');
     cuisine.innerHTML = restaurant.cuisine_type;
     setFormReviewRestaurantId(restaurant);
+    addSubmitFormListener();
     createFavIcon(restaurant, 'restaurant_detail', document.getElementById('restaurant-container'));
    
 
@@ -146,6 +147,13 @@ const setFormReviewRestaurantId = (restaurant)=>{
     const restaurantIdField = document.querySelector('#reviews-form [name=restaurant_id]');
     restaurantIdField.value = restaurant.id;
 };
+const addSubmitFormListener = ()=>{
+    const form = document.getElementById('reviews-form');
+    form.addEventListener('submit', (event)=>{
+        event.preventDefault();
+        this.postRestaurantReview(this);
+    }); 
+};
 /**
  * Create review HTML and add it to the webpage.
  */
@@ -192,7 +200,9 @@ const fillBreadcrumb = (restaurant=self.restaurant) => {
     
     breadcrumb.appendChild(li);
 };
-
+const postRestaurantReview = (form)=>{
+    console.log('postRestaurantReview', {event, form});
+};
 /**
  * Get a parameter by name from page URL.
  */
