@@ -54,7 +54,7 @@
     <!-- Beginning reviews -->
     <section id="reviews-container" tabindex="0">
       <h3>Reviews</h3>
-      <form id="reviews-form" method="post" action="/reviews/" class="review-form">
+    <form id="reviews-form" method="post" onsubmit="submitReview(this);" class="review-form">
         <div class="title">Your opinion matters ...</div>
         <input type="hidden" name="restaurant_id" value="" />
         <input class="name" type="text" aria-label="Your name" name="name" placeholder="Your name..." />
