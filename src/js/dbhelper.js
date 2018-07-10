@@ -100,14 +100,73 @@ DBHelper = (function () {
                                 if (!cursor) return;
                                 const review = cursor.value;
                                 if (map){
-                                    if (map[review.id].updatedAt > review.updatedAt) {
-                                        //update IndexedDB
-                                        review.flag = '1';
-                                        cursor.update(review);
-                                    } else if (map[cursor.value.id].updatedAt < cursor.value.updatedAt) {
-                                        //update backend with API
-                                        fetch(POST REVIEW){}
+                                    const fetch_params = {
+                                        data : {},
+                                        action_url: API_REVIEWS,
+                                        method: '',
+                                    };
+
+                                    if (review.id && map[review.id]){
+                                        if (map[review.id].updatedAt > review.updatedAt) {
+                                            //update IndexedDB
+                                            review.id = map[review.id].id;
+                                            review.restaurant_id = map[review.id].restaurant_id;
+                                            review.name = map[review.id].name;
+                                            review.createdAt = map[review.id].createdAt;
+                                            review.updatedAt = map[review.id].updatedAt;
+                                            review.rating = map[review.id].rating;
+                                            review.comments = map[review.id].comments;
+
+                                            cursor.update(review);
+                                        } else if (map[cursor.value.id].updatedAt < review.updatedAt) {
+                                            //update backend with API
+                                            fetch_params.data = {
+                                                name: review.name,
+                                                rating: review.rating,
+                                                comments: review.comments,
+                                            };
+                                            fetch_params.action_url = `${API_REVIEWS}${review.id}`;
+                                            fetch_params.method = 'PUT';
+                                        }
+                                    }else{
+                                        //DO THE INSERT
+                                        fetch_params.data = {
+                                            restaurant_id: review.restaurant_id,
+                                            name: review.name,
+                                            rating: review.rating,
+                                            comments: review.comments,
+                                        };
+                                        fetch_params.action_url = `${API_REVIEWS}`;
+                                        fetch_params.method = 'POST';
+
                                     }
+                                    fetch(fetch_params.action_url, 
+                                        {
+                                            method: fetch_params.method, 
+                                            data: fetch_params.data
+                                        })
+                                        .then(response=>{
+                                            if (!response.ok) {
+                                                return;
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(json =>(
+                                            console.log(
+                                                'Everything went ok updating review ', 
+                                                {
+                                                    review, 
+                                                    json
+                                                }
+                                            )
+                                        )).catch(err => (
+                                            console.error(
+                                                'Everything went wrong updating review ', {
+                                                    review,
+                                                    err
+                                                }
+                                            )
+                                        ));
                                 }
                                 reviews.push(cursor.value);
 
