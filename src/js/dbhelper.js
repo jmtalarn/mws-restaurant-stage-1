@@ -25,7 +25,9 @@ DBHelper = (function () {
         store.createIndex('by-neighborhood-cuisine', ['neighborhood', 'cuisine_type'], {
             unique: false
         });
-        var reviews_store = upgradeDb.createObjectStore(REVIEWS, { keyPath: 'id'});
+        var reviews_store = upgradeDb.createObjectStore(REVIEWS, {
+            keyPath: 'id'
+        });
         reviews_store.createIndex('by-restaurant', 'restaurant_id', {
             unique: false
         });
@@ -79,102 +81,19 @@ DBHelper = (function () {
             });
         },
         getReviewsForRestaurant: (restaurant_id) => {
-            fetch(`${API_REVIEWS}/?restaurant_id=${restaurant_id}`)
+            //if map undefined error proceed without update
+            // if map proceed to update 
+            return fetch(`${API_REVIEWS}?restaurant_id=${restaurant_id}`)
                 .then(response => {
                     if (!response.ok) {
-                        return; 
+                        throw Error({
+                            code: response.status,
+                            message: response.statusText
+                        });
                     }
                     return response.json();
-                })
-                .then(json => (json? json.reduce((acc,curr)=>{ acc[curr.id]=curr; return acc; },{}):json ) )
-                .then(map => {
-                    //if map undefined error proceed without update
-                    // if map proceed to update 
-                    const reviews = [];
-                    return dbPromise
-                        .then(db => db.transaction(REVIEWS)
-                            .objectStore(REVIEWS)
-                            .index('by-restaurant')
-                            .openKeyCursor(IDBKeyRange.only(restaurant_id))
-                            .then(function cursorKeyIterate(cursor) {
-                                if (!cursor) return;
-                                const review = cursor.value;
-                                if (map){
-                                    const fetch_params = {
-                                        data : {},
-                                        action_url: API_REVIEWS,
-                                        method: '',
-                                    };
+                });
 
-                                    if (review.id && map[review.id]){
-                                        if (map[review.id].updatedAt > review.updatedAt) {
-                                            //update IndexedDB
-                                            review.id = map[review.id].id;
-                                            review.restaurant_id = map[review.id].restaurant_id;
-                                            review.name = map[review.id].name;
-                                            review.createdAt = map[review.id].createdAt;
-                                            review.updatedAt = map[review.id].updatedAt;
-                                            review.rating = map[review.id].rating;
-                                            review.comments = map[review.id].comments;
-
-                                            cursor.update(review);
-                                        } else if (map[cursor.value.id].updatedAt < review.updatedAt) {
-                                            //update backend with API
-                                            fetch_params.data = {
-                                                name: review.name,
-                                                rating: review.rating,
-                                                comments: review.comments,
-                                            };
-                                            fetch_params.action_url = `${API_REVIEWS}${review.id}`;
-                                            fetch_params.method = 'PUT';
-                                        }
-                                    }else{
-                                        //DO THE INSERT
-                                        fetch_params.data = {
-                                            restaurant_id: review.restaurant_id,
-                                            name: review.name,
-                                            rating: review.rating,
-                                            comments: review.comments,
-                                        };
-                                        fetch_params.action_url = `${API_REVIEWS}`;
-                                        fetch_params.method = 'POST';
-
-                                    }
-                                    fetch(fetch_params.action_url, 
-                                        {
-                                            method: fetch_params.method, 
-                                            data: fetch_params.data
-                                        })
-                                        .then(response=>{
-                                            if (!response.ok) {
-                                                return;
-                                            }
-                                            return response.json();
-                                        })
-                                        .then(json =>(
-                                            console.log(
-                                                'Everything went ok updating review ', 
-                                                {
-                                                    review, 
-                                                    json
-                                                }
-                                            )
-                                        )).catch(err => (
-                                            console.error(
-                                                'Everything went wrong updating review ', {
-                                                    review,
-                                                    err
-                                                }
-                                            )
-                                        ));
-                                }
-                                reviews.push(cursor.value);
-
-                                return cursor.continue().then(cursorKeyIterate);
-                            })).then(()=>{return reviews;});
-
-                }).then(t => console.log('Loaded restaurant reviews'))
-                .catch(err=>{ console.error(err); });
         },
         getCuisines: () => {
             let keys = new Set();

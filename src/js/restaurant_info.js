@@ -89,7 +89,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     }
     const cuisine = document.getElementById('restaurant-cuisine');
     cuisine.innerHTML = restaurant.cuisine_type;
-    setFormReviewRestaurantId(restaurant);
+  
     createFavIcon(restaurant, 'restaurant_detail', document.getElementById('restaurant-container'));
    
     // fill operating hours
@@ -97,7 +97,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
         fillRestaurantHoursHTML();
     }
     // fill reviews
-    fillReviewsHTML();
+    fillReviewsHTML(restaurant);
 };
 
 /**
@@ -123,24 +123,30 @@ const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hour
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+const fillReviewsHTML = (restaurant) => {
     const container = document.getElementById('reviews-container');
+    const reviewsPromise = DBHelper.getReviewsForRestaurant(restaurant.id);
+    reviewsPromise.then(reviews=>{
+        const ul = document.getElementById('reviews-list');
+        if (!reviews) {
+            const noReviews = document.createElement('p');
+            noReviews.innerHTML = 'No reviews yet!';
+            ul.appendChild(noReviews);
+            return;
+        }
 
-    const ul = document.getElementById('reviews-list');
-    if (!reviews) {
-        const noReviews = document.createElement('p');
-        noReviews.innerHTML = 'No reviews yet!';
-        ul.appendChild(noReviews);
-        return;
-    }
-   
-    reviews.forEach(review => {
-        ul.appendChild(createReviewHTML(review));
+        reviews.forEach(review => {
+            ul.appendChild(createReviewHTML(review));
+        });
+        container.appendChild(ul);
+
     });
-    container.appendChild(ul);
+
+    setFormReviewRestaurantId(restaurant);
 };
 
 const setFormReviewRestaurantId = (restaurant)=>{
+
     const restaurantIdField = document.querySelector('#reviews-form [name=restaurant_id]');
     restaurantIdField.value = restaurant.id;
 };
@@ -161,11 +167,11 @@ const createReviewHTML = (review) => {
 
     const date = document.createElement('p');
     date.classList.add('date');
-    date.innerHTML = review.date;
+    date.innerHTML = new Date(review.createdAt).toLocaleString();
     li.appendChild(date);
 
     const rating = document.createElement('p');
-    rating.innerHTML = `Rating: ${review.rating}`;
+    rating.innerHTML = `Rating <span style="font-style: normal">⭐</span> ${review.rating}`;
     rating.classList.add('rating');
     li.appendChild(rating);
 
