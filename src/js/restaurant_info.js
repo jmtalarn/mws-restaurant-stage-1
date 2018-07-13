@@ -150,12 +150,27 @@ const setFormReviewRestaurantId = (restaurant)=>{
     const restaurantIdField = document.querySelector('#reviews-form [name=restaurant_id]');
     restaurantIdField.value = restaurant.id;
 };
-const submitReview = (args)=>{
-    console.log('submitReview',args);   
+const submitReview = (form)=>{
+
+    DBHelper.postReviewForRestaurant(
+        {
+            'restaurant_id': form.restaurant_id.value,
+            'name': form.name.value,
+            'rating': form.rating.value,
+            'comments': form.comments.value
+        }
+    ).then(
+        result=>{
+            console.log('Result after submit form', result);
+            const container = document.getElementById('reviews-list');
+            container.innerHTML='';
+            fillReviewsHTML(self.restaurant);
+        } 
+    );
 };
 /**
- * Create review HTML and add it to the webpage.
- */
+                             * Create review HTML and add it to the webpage.
+                             */
 const createReviewHTML = (review) => {
     const li = document.createElement('li');
     li.setAttribute('tabindex','0');

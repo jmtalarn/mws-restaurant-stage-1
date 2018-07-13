@@ -54,14 +54,14 @@
     <!-- Beginning reviews -->
     <section id="reviews-container" tabindex="0">
       <h3>Reviews</h3>
-    <form id="reviews-form" method="post" onsubmit="submitReview(this);" class="review-form">
+    <form id="reviews-form" method="post" onsubmit="submitReview(this);return false;" class="review-form">
         <div class="title">Your opinion matters ...</div>
-        <input type="hidden" name="restaurant_id" value="" />
-        <input class="name" type="text" aria-label="Your name" name="name" placeholder="Your name..." />
+        <input type="hidden"  name="restaurant_id" value="" />
+        <input class="name" required type="text" aria-label="Your name" name="name" placeholder="Your name..." />
         <label class="rating">⭐ 
-          <input type="number" placeholder="Your rating from 0 to 5" aria-label="Set your rating from 0 to 5" name="rating" step="1" min="0" max="5"/>
+<input type="number" required placeholder="Your rating from 0 to 5" aria-label="Set your rating from 0 to 5" name="rating" step="1" min="0" max="5"/>
         </label>
-        <textarea class="comments" name="comments" aria-label="Write your comment here" placeholder="Write your review here"></textarea>
+        <textarea class="comments" required name="comments" aria-label="Write your comment here" placeholder="Write your review here"></textarea>
         <input type="submit" value="Send your review" />
       </form>
       <ul id="reviews-list" ></ul>

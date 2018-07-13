@@ -81,8 +81,6 @@ DBHelper = (function () {
             });
         },
         getReviewsForRestaurant: (restaurant_id) => {
-            //if map undefined error proceed without update
-            // if map proceed to update 
             return fetch(`${API_REVIEWS}?restaurant_id=${restaurant_id}`)
                 .then(response => {
                     if (!response.ok) {
@@ -93,8 +91,23 @@ DBHelper = (function () {
                     }
                     return response.json();
                 });
-
         },
+        postReviewForRestaurant: (data) => {
+            return fetch(`${API_REVIEWS}`, 
+                {method: 'POST', 
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw Error({
+                            code: response.status,
+                            message: response.statusText
+                        });
+                    }
+                    return response.json();
+                });
+        },
+
         getCuisines: () => {
             let keys = new Set();
             return dbPromise
