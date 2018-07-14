@@ -90,7 +90,39 @@ DBHelper = (function () {
                         });
                     }
                     return response.json();
-                });
+                })
+                .catch(err=>{
+                    console.error('Some error occurred');
+                    var reviews = [];
+                    return dbPromise
+                        .then(db => {
+                            return db.transaction(REVIEWS)
+                                .objectStore(REVIEWS)
+                                .index('by-restaurant')
+                                .openCursor(IDBKeyRange.only(restaurant_id))
+                                .then(function cursorIterate(cursor) {
+                                    if (!cursor) return;
+                                    reviews.push(cursor.value);
+                                    return cursor.continue().then(cursorIterate);
+                                }).then(() => {
+                                    return reviews;
+                                });
+                        });
+                })
+                .then(json=>{
+                    dbPromise.then(db => {
+                        json.forEach(review=>{
+                            const tx = db.transaction(REVIEWS, 'readwrite');
+                            json.forEach(review => {
+                                tx.objectStore(REVIEWS).put(review);
+                            });
+                            tx.complete;
+                        });
+                        
+                    });
+                    return json;
+                })
+            ;
         },
         postReviewForRestaurant: (data) => {
             return fetch(`${API_REVIEWS}`, 

@@ -162,6 +162,7 @@ const submitReview = (form)=>{
     ).then(
         result=>{
             console.log('Result after submit form', result);
+            form.reset();
             const container = document.getElementById('reviews-list');
             container.innerHTML='';
             fillReviewsHTML(self.restaurant);
