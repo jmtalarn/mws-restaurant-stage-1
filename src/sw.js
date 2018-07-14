@@ -23,8 +23,12 @@ self.addEventListener('fetch', function(event) {
                 }
                 return response;
             }).catch(err=>{
-                return cache.match(event.request)
-                    .then( response=> (response || cache.match('/cached.html')) );
+                if (event.request.method=='GET'){
+                    return cache.match(event.request)
+                        .then(response => (response || cache.match('/cached.html')));
+                }else{
+                    throw err;
+                }
             });
         })
     );

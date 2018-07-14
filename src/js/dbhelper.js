@@ -1,4 +1,4 @@
-/*global google*/
+/*global google dbPromise newMap*/
 /**
  * Common database helper functions.
  */
@@ -62,7 +62,7 @@ DBHelper = (function () {
                         });
                         return tx.complete;
 
-                    }).then(t => console.log('Loaded restaurants data'));
+                    }).then(t => console.log('Loaded restaurants data',t));
             });
 
 
@@ -92,7 +92,7 @@ DBHelper = (function () {
                     return response.json();
                 })
                 .catch(err=>{
-                    console.error('Some error occurred');
+                    console.error('Some error occurred',err);
                     var reviews = [];
                     return dbPromise
                         .then(db => {
@@ -102,6 +102,7 @@ DBHelper = (function () {
                                 .openCursor(IDBKeyRange.only(restaurant_id))
                                 .then(function cursorIterate(cursor) {
                                     if (!cursor) return;
+
                                     reviews.push(cursor.value);
                                     return cursor.continue().then(cursorIterate);
                                 }).then(() => {
@@ -110,19 +111,62 @@ DBHelper = (function () {
                         });
                 })
                 .then(json=>{
-                    dbPromise.then(db => {
-                        json.forEach(review=>{
-                            const tx = db.transaction(REVIEWS, 'readwrite');
-                            json.forEach(review => {
-                                tx.objectStore(REVIEWS).put(review);
-                            });
-                            tx.complete;
-                        });
-                        
+                    const latestReviews = [];
+                    return dbPromise.then(db => {
+                        return db.transaction(REVIEWS)
+                            .objectStore(REVIEWS)
+                            .index('by-restaurant')
+                            .openCursor(IDBKeyRange.only(restaurant_id))
+                            .then(function cursorIterate(cursor) {
+                                if (!cursor) return;
+                                if (cursor.value.id){
+                                    const review = json.find(x => (x.id == cursor.value.id));
+                                    if (review.updatedAt>cursor.value.updatedAt){
+                                        cursor.update(review);
+                                        latestReviews.push(review);
+                                    }else{
+                                        fetch(`${API_REVIEWS}${cursor.value.id}`, {
+                                            method: 'PUT',
+                                            body: JSON.stringify(cursor.value)
+                                        })
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    throw Error({
+                                                        code: response.status,
+                                                        message: response.statusText
+                                                    });
+                                                }
+                                                return response.json();
+                                            }).then(json=>{
+                                                latestReviews.push(json);
+                                            });
+                                    }
+                                }else{
+                                    this.postReviewForRestaurant(cursor.value)
+                                        .then((newReview)=>{
+                                            cursor.delete(); 
+                                            latestReviews.push(newReview);
+                                        });
+                                }
+                                return cursor.continue().then(cursorIterate);
+                            }).then(result =>{
+                                if(!result){ 
+                                  
+                                    const tx = db.transaction(REVIEWS, 'readwrite');
+                                    json.forEach(review => {
+                                        tx.objectStore(REVIEWS).put(review);
+                                    });
+                                    tx.complete;
+                                    return json;
+                                }else{
+
+                                    return latestReviews;
+                                }
+                            }
+                            );
                     });
-                    return json;
-                })
-            ;
+                });
+
         },
         postReviewForRestaurant: (data) => {
             return fetch(`${API_REVIEWS}`, 
@@ -137,6 +181,26 @@ DBHelper = (function () {
                         });
                     }
                     return response.json();
+                })
+                .then(review=>{
+                    dbPromise.then(db => {
+                        const tx = db.transaction(REVIEWS, 'readwrite');
+                        tx.objectStore(REVIEWS).put(review);
+                        tx.complete;
+                    });
+                    return review;
+                })
+                .catch(err=>{
+                    console.error('Something went wrong updating the data.', err);
+                    const timestamp = new Date().getTime();
+                    data.createdAt = timestamp;
+                    data.updatedAt = timestamp;
+                    dbPromise.then(db => {
+                        const tx = db.transaction(REVIEWS, 'readwrite');
+                        tx.objectStore(REVIEWS).put(data);
+                        tx.complete;
+                    });
+                    return data;
                 });
         },
 
