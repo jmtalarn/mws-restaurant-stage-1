@@ -128,7 +128,7 @@ const fillReviewsHTML = (restaurant) => {
     const reviewsPromise = DBHelper.getReviewsForRestaurant(restaurant.id);
     reviewsPromise.then(reviews=>{
         const ul = document.getElementById('reviews-list');
-        if (!reviews) {
+        if (!reviews || reviews.length==0) {
             const noReviews = document.createElement('p');
             noReviews.innerHTML = 'No reviews yet!';
             ul.appendChild(noReviews);
