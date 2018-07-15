@@ -1,4 +1,4 @@
-/*global google dbPromise newMap*/
+/*global google dbPromise DBHelper newMap*/
 /**
  * Common database helper functions.
  */
@@ -12,7 +12,7 @@ DBHelper = (function () {
     const RESTAURANTS = 'restaurants';
     const REVIEWS = 'reviews';
 
-    dbPromise = idb.open(DB_RESTAURANTS, 2, (upgradeDb) => {
+    dbPromise = idb.open(DB_RESTAURANTS, 3, (upgradeDb) => {
         var store = upgradeDb.createObjectStore(RESTAURANTS, {
             keyPath: 'id'
         });
@@ -31,7 +31,6 @@ DBHelper = (function () {
         reviews_store.createIndex('by-restaurant', 'restaurant_id', {
             unique: false
         });
-
     });
     dbPromise.then(db => {
         fetch(`${API_RESTAURANTS}?is_favorite=true`)
@@ -185,6 +184,8 @@ DBHelper = (function () {
                 .then(review=>{
                     dbPromise.then(db => {
                         const tx = db.transaction(REVIEWS, 'readwrite');
+                        review.createdAt = new Date(review.createdAt).getTime();
+                        review.updatedAt = new Date(review.updatedAt).getTime();
                         tx.objectStore(REVIEWS).put(review);
                         tx.complete;
                     });
@@ -195,13 +196,18 @@ DBHelper = (function () {
                     const timestamp = new Date().getTime();
                     data.createdAt = timestamp;
                     data.updatedAt = timestamp;
-                    dbPromise.then(db => {
+        
+                    return dbPromise.then(db => {
                         const tx = db.transaction(REVIEWS, 'readwrite');
-                        tx.objectStore(REVIEWS).put(data);
-                        tx.complete;
+                        const store = tx.objectStore(REVIEWS);
+                        data.id = `offline-${data.createdAt}`;
+                        store.put(data);
+                        return tx.complete;
                     });
-                    return data;
-                });
+                      
+                       
+                }).then(()=>data);
+  
         },
 
         getCuisines: () => {

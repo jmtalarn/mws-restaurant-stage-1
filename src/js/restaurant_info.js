@@ -154,9 +154,9 @@ const submitReview = (form)=>{
 
     DBHelper.postReviewForRestaurant(
         {
-            'restaurant_id': form.restaurant_id.value,
+            'restaurant_id': parseInt(form.restaurant_id.value),
             'name': form.name.value,
-            'rating': form.rating.value,
+            'rating': parseInt(form.rating.value),
             'comments': form.comments.value
         }
     ).then(
@@ -170,8 +170,8 @@ const submitReview = (form)=>{
     );
 };
 /**
-                             * Create review HTML and add it to the webpage.
-                             */
+ * Create review HTML and add it to the webpage.
+ */
 const createReviewHTML = (review) => {
     const li = document.createElement('li');
     li.setAttribute('tabindex','0');
