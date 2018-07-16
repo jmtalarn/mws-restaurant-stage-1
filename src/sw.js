@@ -1,4 +1,6 @@
 const CACHE_NAME = 'mws-restaurant-cache';
+const port = 1337; // Change this to your server port
+const API_BASEURL = `http://localhost:${port}`;
 self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {

@@ -80,92 +80,76 @@ DBHelper = (function () {
             });
         },
         getReviewsForRestaurant: (restaurant_id) => {
-            return fetch(`${API_REVIEWS}?restaurant_id=${restaurant_id}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw Error({
-                            code: response.status,
-                            message: response.statusText
-                        });
-                    }
-                    return response.json();
-                })
-                .catch(err=>{
-                    console.error('Some error occurred',err);
-                    var reviews = [];
-                    return dbPromise
-                        .then(db => {
-                            return db.transaction(REVIEWS)
-                                .objectStore(REVIEWS)
-                                .index('by-restaurant')
-                                .openCursor(IDBKeyRange.only(restaurant_id))
-                                .then(function cursorIterate(cursor) {
-                                    if (!cursor) return;
-
-                                    reviews.push(cursor.value);
-                                    return cursor.continue().then(cursorIterate);
-                                }).then(() => {
-                                    return reviews;
-                                });
-                        });
-                })
-                .then(json=>{
-                    const latestReviews = [];
-                    return dbPromise.then(db => {
-                        return db.transaction(REVIEWS)
-                            .objectStore(REVIEWS)
-                            .index('by-restaurant')
-                            .openCursor(IDBKeyRange.only(restaurant_id))
-                            .then(function cursorIterate(cursor) {
-                                if (!cursor) return;
-                                if (cursor.value.id){
-                                    const review = json.find(x => (x.id == cursor.value.id));
-                                    if (review.updatedAt>cursor.value.updatedAt){
-                                        cursor.update(review);
-                                        latestReviews.push(review);
-                                    }else{
-                                        fetch(`${API_REVIEWS}${cursor.value.id}`, {
-                                            method: 'PUT',
-                                            body: JSON.stringify(cursor.value)
-                                        })
-                                            .then(response => {
-                                                if (!response.ok) {
-                                                    throw Error({
-                                                        code: response.status,
-                                                        message: response.statusText
-                                                    });
-                                                }
-                                                return response.json();
-                                            }).then(json=>{
-                                                latestReviews.push(json);
+            const reviewsDB = [];
+            return dbPromise
+                .then(db => {
+                    return db.transaction(REVIEWS)
+                        .objectStore(REVIEWS)
+                        .index('by-restaurant')
+                        .openCursor(IDBKeyRange.only(restaurant_id))
+                        .then(function cursorIterate(cursor) {
+                            if (!cursor) return;
+                            if (cursor.value.offline){
+                                fetch(`${API_REVIEWS}`, {
+                                    method: 'POST',
+                                    body: JSON.stringify(cursor.value)
+                                })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw Error({
+                                                code: response.status,
+                                                message: response.statusText
                                             });
-                                    }
-                                }else{
-                                    this.postReviewForRestaurant(cursor.value)
-                                        .then((newReview)=>{
-                                            cursor.delete(); 
-                                            latestReviews.push(newReview);
-                                        });
-                                }
-                                return cursor.continue().then(cursorIterate);
-                            }).then(result =>{
-                                if(!result){ 
-                                  
-                                    const tx = db.transaction(REVIEWS, 'readwrite');
-                                    json.forEach(review => {
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(review => {
+                                        const tx = db.transaction(REVIEWS, 'readwrite');
+                                        tx.objectStore(REVIEWS).delete(cursor.value.id); 
                                         tx.objectStore(REVIEWS).put(review);
+                                        reviewsDB.push(review);
+                                        tx.complete;
+                                    }).catch(error=>{
+                                        console.error('Some error happened trying to push an offline review');
+                                        reviewsDB.push(cursor.value);
                                     });
-                                    tx.complete;
-                                    return json;
-                                }else{
-
-                                    return latestReviews;
-                                }
+                            }else{
+                                reviewsDB.push(cursor.value);
                             }
-                            );
-                    });
+                            return cursor.continue().then(cursorIterate);
+                        }).then(() => {
+                            return fetch(`${API_REVIEWS}?restaurant_id=${restaurant_id}`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw Error({
+                                            code: response.status,
+                                            message: response.statusText
+                                        });
+                                    }
+                                    return response.json();
+                                }).then(reviewsJSON=>{ 
+                                    console.log({reviewsJSON});
+                                    const reviewsDBMap = reviewsDB.reduce((acc,curr)=>{ console.log('STEP', {acc,curr}); acc[curr.id]=curr; return acc; }, {});
+                                    console.log({reviewsDBMap});
+                                    for(const r of reviewsJSON){
+                                        reviewsDBMap[r.id] = r;
+                                        const tx = db.transaction(REVIEWS, 'readwrite');
+                                        tx.objectStore(REVIEWS).put(r);
+                                        reviewsDB.push(r);
+                                        tx.complete;
+                                    }
+                                    console.log({
+                                        reviewsDBMap
+                                    });
+                                    return Object.keys(reviewsDBMap).reduce((acc,id)=>{ acc.push(reviewsDBMap[id]); return acc; },[] );
+                                });
+                                                                        
+                        }).catch(error=>{
+                            console.error('Error getting the restaurant reviews', error);
+                            return reviewsDB;
+                        });
                 });
-
+           
         },
         postReviewForRestaurant: (data) => {
             return fetch(`${API_REVIEWS}`, 
@@ -200,6 +184,7 @@ DBHelper = (function () {
                     return dbPromise.then(db => {
                         const tx = db.transaction(REVIEWS, 'readwrite');
                         const store = tx.objectStore(REVIEWS);
+                        data.offline = true;
                         data.id = `offline-${data.createdAt}`;
                         store.put(data);
                         return tx.complete;
