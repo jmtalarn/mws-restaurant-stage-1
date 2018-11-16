@@ -16,8 +16,23 @@ Most of the code in this project has been written to the ES6 JavaScript specific
 
 ### How to start
 1. First of all do a `npm install` to install the required npm packages
- - The gulp plugin used to resize images https://www.npmjs.com/package/gulp-image-resize requires the `imagemagick` and `graphicsmagick` software to be installed
-2. Run the git command to update the server app included as submodule `git submodule update --recursive --remote`
+ - The gulp plugin used to resize images https://www.npmjs.com/package/gulp-image-resize requires the `imagemagick` and `graphicsmagick` software to be installed.
+   - Ubuntu:
+   ```bash
+   apt-get install imagemagick
+   apt-get install graphicsmagick
+   ```
+   - Mac OS X (using Homebrew):
+   ```bash
+   brew install imagemagick
+   brew install graphicsmagick
+   ```
+   - Windows & others:
+   ```http://www.imagemagick.org/script/binary-releases.php```
+
+Confirm that ImageMagick is properly set up by executing convert -help in a terminal
+  - 
+2. Run the git command to init and update the server app included as submodule `git submodule init && git submodule update --recursive --remote`
 3. Run `npm start` command. That will launch two things:
  - The server module
  - The default `gulp` task with development purposes with live reload while you're editing. Running also the client in the port 8000
