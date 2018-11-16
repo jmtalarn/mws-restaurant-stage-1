@@ -33,6 +33,7 @@ Most of the code in this project has been written to the ES6 JavaScript specific
 Confirm that ImageMagick is properly set up by executing convert -help in a terminal
   - 
 2. Run the git command to init and update the server app included as submodule `git submodule init && git submodule update --recursive --remote`
+ - Install the node modules required by the server `cd server/ && npm install && cd ..`
 3. Run `npm start` command. That will launch two things:
  - The server module
  - The default `gulp` task with development purposes with live reload while you're editing. Running also the client in the port 8000
